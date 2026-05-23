@@ -15,8 +15,8 @@ export function parseAccountResponse(
       assetIssuer: "asset_issuer" in b ? b.asset_issuer : undefined,
       balance: b.balance,
       balanceFloat: parseFloat(b.balance),
-      buyingLiabilities: b.buying_liabilities,
-      sellingLiabilities: b.selling_liabilities,
+      buyingLiabilities: "buying_liabilities" in b ? b.buying_liabilities : "0",
+      sellingLiabilities: "selling_liabilities" in b ? b.selling_liabilities : "0",
       limit: "limit" in b ? b.limit : undefined,
       isNative,
     };

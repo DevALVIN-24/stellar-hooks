@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useReducer } from "react";
 import {
   isConnected,
-  getAddress,
-  getNetwork,
+  getPublicKey,
+  getNetworkDetails,
   requestAccess,
   signTransaction,
   signAuthEntry,
@@ -86,7 +86,7 @@ export function useFreighter(): UseFreighterReturn {
       dispatch({ type: "SET_LOADING", payload: true });
 
       try {
-        const { isConnected: connected } = await isConnected();
+        const connected = await isConnected();
         if (cancelled) return;
 
         if (!connected) {
@@ -96,16 +96,16 @@ export function useFreighter(): UseFreighterReturn {
         }
 
         // Check if an address is already authorised
-        const addressResult = await getAddress();
+        const publicKey = await getPublicKey();
         if (cancelled) return;
 
-        if (!addressResult.error && addressResult.address) {
-          const networkResult = await getNetwork();
+        if (publicKey) {
+          const networkResult = await getNetworkDetails();
           if (cancelled) return;
 
           dispatch({
             type: "SET_CONNECTED",
-            publicKey: addressResult.address,
+            publicKey,
             network: networkResult.network ?? "",
             networkPassphrase: networkResult.networkPassphrase ?? "",
           });
@@ -127,14 +127,14 @@ export function useFreighter(): UseFreighterReturn {
     dispatch({ type: "SET_LOADING", payload: true });
     try {
       await requestAccess();
-      const addressResult = await getAddress();
-      if (addressResult.error || !addressResult.address) {
-        throw new Error(addressResult.error ?? "Failed to get address");
+      const publicKey = await getPublicKey();
+      if (!publicKey) {
+        throw new Error("Failed to get public key");
       }
-      const networkResult = await getNetwork();
+      const networkResult = await getNetworkDetails();
       dispatch({
         type: "SET_CONNECTED",
-        publicKey: addressResult.address,
+        publicKey,
         network: networkResult.network ?? "",
         networkPassphrase: networkResult.networkPassphrase ?? "",
       });
@@ -151,18 +151,16 @@ export function useFreighter(): UseFreighterReturn {
     async (xdr: string, opts?: SignTransactionOptions): Promise<string> => {
       const result = await signTransaction(xdr, {
         networkPassphrase: opts?.networkPassphrase,
-        address: opts?.address,
+        accountToSign: opts?.address,
       });
-      if (result.error) throw new Error(result.error);
-      return result.signedTxXdr;
+      return result;
     },
     []
   );
 
   const signEntry = useCallback(async (entryPreimageXdr: string): Promise<string> => {
     const result = await signAuthEntry(entryPreimageXdr);
-    if (result.error) throw new Error(result.error);
-    return result.signedAuthEntry;
+    return result;
   }, []);
 
   return {

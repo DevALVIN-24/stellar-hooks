@@ -1,9 +1,8 @@
 import { useCallback, useReducer } from "react";
 import {
-  SorobanRpc,
+  rpc,
   TransactionBuilder,
   Horizon,
-  xdr,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import type { TransactionState, TransactionStatus } from "../types";
@@ -12,7 +11,7 @@ import { sleep, backoff } from "../utils";
 // ─── Options ──────────────────────────────────────────────────────────────────
 
 export interface UseTransactionOptions {
-  /** "soroban" uses SorobanRpc; "classic" uses Horizon. Default: "soroban" */
+  /** "soroban" uses Stellar RPC; "classic" uses Horizon. Default: "soroban" */
   mode?: "soroban" | "classic";
   /** Polling timeout in seconds. Default: 60 */
   timeoutSeconds?: number;
@@ -85,7 +84,7 @@ export function useTransaction(
 
       try {
         if (mode === "soroban") {
-          const server = new SorobanRpc.Server(config.sorobanRpcUrl);
+          const server = new rpc.Server(config.sorobanRpcUrl);
           const tx = TransactionBuilder.fromXDR(signedXdr, config.networkPassphrase);
 
           const sendResult = await server.sendTransaction(tx);
@@ -107,12 +106,12 @@ export function useTransaction(
 
             const getResult = await server.getTransaction(txHash);
 
-            if (getResult.status === SorobanRpc.Api.GetTransactionStatus.SUCCESS) {
+            if (getResult.status === rpc.Api.GetTransactionStatus.SUCCESS) {
               dispatch({ type: "SUCCESS", hash: txHash });
               return;
             }
 
-            if (getResult.status === SorobanRpc.Api.GetTransactionStatus.FAILED) {
+            if (getResult.status === rpc.Api.GetTransactionStatus.FAILED) {
               throw new Error(`Transaction failed on-chain: ${txHash}`);
             }
           }

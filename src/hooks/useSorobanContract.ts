@@ -1,10 +1,9 @@
 import { useCallback, useReducer } from "react";
 import {
   Contract,
-  SorobanRpc,
+  rpc,
   Transaction,
   TransactionBuilder,
-  Networks,
   BASE_FEE,
   xdr,
   nativeToScVal,
@@ -111,7 +110,7 @@ export function useSorobanContract<TResult = unknown>(
         // ── 1. Build ──────────────────────────────────────────────────────────
         dispatch({ type: "BUILDING" });
 
-        const server = new SorobanRpc.Server(config.sorobanRpcUrl);
+        const server = new rpc.Server(config.sorobanRpcUrl);
         const contract = new Contract(contractId);
 
         // Convert plain JS values to ScVals if needed
@@ -123,7 +122,7 @@ export function useSorobanContract<TResult = unknown>(
         const passphrase = networkPassphrase ?? config.networkPassphrase;
 
         const tx = new TransactionBuilder(account, {
-          fee,
+          fee: String(fee),
           networkPassphrase: passphrase,
         })
           .addOperation(contract.call(method, ...scArgs))
@@ -133,11 +132,11 @@ export function useSorobanContract<TResult = unknown>(
         // ── 2. Simulate ───────────────────────────────────────────────────────
         const simResult = await server.simulateTransaction(tx);
 
-        if (SorobanRpc.Api.isSimulationError(simResult)) {
+        if (rpc.Api.isSimulationError(simResult)) {
           throw new Error(`Simulation failed: ${simResult.error}`);
         }
 
-        const preparedTx = SorobanRpc.assembleTransaction(tx, simResult).build();
+        const preparedTx = rpc.assembleTransaction(tx, simResult).build();
 
         // ── 3. Sign ───────────────────────────────────────────────────────────
         dispatch({ type: "SIGNING" });
@@ -174,7 +173,7 @@ export function useSorobanContract<TResult = unknown>(
 
           const getResult = await server.getTransaction(txHash);
 
-          if (getResult.status === SorobanRpc.Api.GetTransactionStatus.SUCCESS) {
+          if (getResult.status === rpc.Api.GetTransactionStatus.SUCCESS) {
             // Extract the return value from the meta
             let parsed: TResult = txHash as TResult;
 
@@ -196,7 +195,7 @@ export function useSorobanContract<TResult = unknown>(
             return parsed;
           }
 
-          if (getResult.status === SorobanRpc.Api.GetTransactionStatus.FAILED) {
+          if (getResult.status === rpc.Api.GetTransactionStatus.FAILED) {
             throw new Error(`Transaction failed: ${txHash}`);
           }
         }

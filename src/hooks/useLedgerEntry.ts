@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { SorobanRpc, xdr } from "@stellar/stellar-sdk";
+import { rpc, xdr } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import type { LedgerEntryState } from "../types";
-import { sleep } from "../utils";
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 
 type Action =
   | { type: "FETCH_START" }
-  | { type: "FETCH_SUCCESS"; payload: SorobanRpc.Api.LedgerEntryResult }
+  | { type: "FETCH_SUCCESS"; payload: rpc.Api.LedgerEntryResult }
   | { type: "FETCH_NOT_FOUND" }
   | { type: "FETCH_ERROR"; payload: Error };
 
@@ -80,7 +79,7 @@ export function useLedgerEntry(
     dispatch({ type: "FETCH_START" });
 
     try {
-      const server = new SorobanRpc.Server(config.sorobanRpcUrl);
+      const server = new rpc.Server(config.sorobanRpcUrl);
       const result = await server.getLedgerEntries(ledgerKey);
 
       if (result.entries.length === 0) {

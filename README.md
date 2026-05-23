@@ -1,5 +1,7 @@
 # stellar-hooks
 
+[![CI](https://github.com/dark-princezz/stellar-hooks/actions/workflows/ci.yml/badge.svg)](https://github.com/dark-princezz/stellar-hooks/actions/workflows/ci.yml)
+
 > React hooks for Stellar and Soroban. The `wagmi` you've been waiting for.
 
 ```bash
