@@ -1,6 +1,11 @@
 # stellar-hooks
 
+[![npm version](https://img.shields.io/npm/v/stellar-hooks.svg?style=flat-square)](https://www.npmjs.com/package/stellar-hooks)
+[![license](https://img.shields.io/npm/l/stellar-hooks.svg?style=flat-square)](LICENSE)
+[![bundle size](https://img.shields.io/bundlephobia/min/stellar-hooks?style=flat-square)](https://bundlephobia.com/package/stellar-hooks)
+
 > React hooks for Stellar and Soroban. The `wagmi` you've been waiting for.
+
 
 ```bash
 npm install stellar-hooks
