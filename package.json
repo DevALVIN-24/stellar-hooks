@@ -42,13 +42,19 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/stellar-hooks.git"
+    "url": "https://github.com/spiffamani/stellar-hooks.git"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
   "dependencies": {
+    "@stellar/freighter-api": "^2.0.0",
+    "@stellar/stellar-sdk": "^13.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^14.3.1",
     "@stellar/freighter-api": "^6.0.1",
     "@stellar/stellar-sdk": "^13.0.0"
   },
@@ -62,6 +68,7 @@
     "eslint": "^8.57.0",
     "jsdom": "^29.1.1",
     "react": "^18.3.0",
+    "react-dom": "^18.3.1",
     "react-test-renderer": "^18.3.0",
     "size-limit": "^12.1.0",
     "tsup": "^8.0.0",

@@ -48,6 +48,10 @@ function reducer(state: FreighterState, action: Action): FreighterState {
       if (!state.isConnected && state.publicKey === null) return state;
       return {
         ...state,
+        // Reaching SET_DISCONNECTED from the probe means isConnected() returned
+        // true (extension detected) but no address is authorised yet. From the
+        // disconnect() callback the extension was already known to be installed.
+        // In both cases the wallet IS installed, so mark it as such.
         isInstalled: true,
         isConnected: false,
         publicKey: null,
