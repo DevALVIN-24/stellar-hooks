@@ -122,9 +122,18 @@ export function useStellarAccount(
   useEffect(() => {
     if (!enabled || !publicKey || refetchInterval <= 0) return;
 
-    intervalRef.current = setInterval(() => void fetch(), refetchInterval);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    const intervalId = setInterval(() => void fetch(), refetchInterval);
+    intervalRef.current = intervalId;
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      clearInterval(intervalId);
+      if (intervalRef.current === intervalId) {
+        intervalRef.current = null;
+      }
     };
   }, [enabled, publicKey, refetchInterval, fetch]);
 
