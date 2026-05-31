@@ -7,6 +7,7 @@
 import { describe, it, expect } from "vitest";
 import { parseAccountResponse } from "../utils";
 import { NETWORK_CONFIGS } from "../types";
+import type { StellarBalance } from "../types";
 import type { Horizon } from "@stellar/stellar-sdk";
 
 // ─── NETWORK_CONFIGS ──────────────────────────────────────────────────────────
@@ -95,5 +96,25 @@ describe("parseAccountResponse", () => {
 
   it("preserves the raw response", () => {
     expect(parsed.raw).toBe(mockRaw);
+  });
+
+  it("sorts balances by balanceFloat descending", () => {
+    const sorted = [...parsed.balances].sort(
+      (a: StellarBalance, b: StellarBalance) => b.balanceFloat - a.balanceFloat
+    );
+    expect(sorted[0]?.balanceFloat).toBe(100.0);
+  });
+
+  it("sorts balances by asset code ascending", () => {
+    const sorted = [...parsed.balances].sort(
+      (a: StellarBalance, b: StellarBalance) => {
+        if (a.assetCode && b.assetCode)
+          return a.assetCode.localeCompare(b.assetCode);
+        if (a.assetCode) return -1;
+        if (b.assetCode) return 1;
+        return 0;
+      }
+    );
+    expect(sorted[0]?.assetCode).toBe("USDC");
   });
 });
