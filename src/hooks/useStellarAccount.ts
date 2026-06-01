@@ -1,148 +1,79 @@
-/**
- * @file useStellarAccount.ts
- * @description Hook for fetching Stellar account details and balances.
- * @package stellar-hooks
- * @license MIT
- */
-
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
-import { useStellarContext } from "../context";
-import { parseAccountResponse } from "../utils";
-import type { StellarAccountData } from "../types";
+import { useStellarContext } from "../context/StellarContext";
+import type { StellarAccountData, StellarBalance } from "../types";
 
-// ─── State ─────────────────────────────────────────────────────────────────────
+export interface UseStellarAccountOptions {
+  enabled?: boolean;
+  refetchInterval?: number;
+}
 
-interface AccountState {
+export interface UseStellarAccountReturn {
   data: StellarAccountData | null;
   isLoading: boolean;
   error: Error | null;
   lastFetchedAt: Date | null;
-}
-
-type Action =
-  | { type: "FETCH_START" }
-  | { type: "FETCH_SUCCESS"; payload: StellarAccountData }
-  | { type: "FETCH_ERROR"; payload: Error }
-  | { type: "RESET" };
-
-function reducer(state: AccountState, action: Action): AccountState {
-  switch (action.type) {
-    case "FETCH_START":
-      return { ...state, isLoading: true, error: null };
-    case "FETCH_SUCCESS":
-      return { data: action.payload, isLoading: false, error: null, lastFetchedAt: new Date() };
-    case "FETCH_ERROR":
-      return { ...state, isLoading: false, error: action.payload };
-    case "RESET":
-      return { data: null, isLoading: false, error: null, lastFetchedAt: null };
-    default:
-      return state;
-  }
-}
-
-// ─── Options ──────────────────────────────────────────────────────────────────
-
-export interface UseStellarAccountOptions {
-  /** Set to false to skip automatic fetching. Default: true */
-  enabled?: boolean;
-  /** Poll interval in ms. Set to 0 to disable. Default: 0 */
-  refetchInterval?: number;
-}
-
-/**
- * @example
- * ```tsx
- * const {
- *   data,          // StellarAccountData | null — full account info
- *   isLoading,     // boolean
- *   error,         // Error | null
- *   lastFetchedAt, // Date | null
- *   refetch,       // () => Promise<void>
- * } = useStellarAccount("G...");
- *
- * // data.balances  → StellarBalance[]
- * // data.sequence  → string
- * // data.raw       → raw Horizon.AccountResponse
- * const xlm = data?.balances.find(b => b.isNative);
- * ```
- */
-export interface UseStellarAccountReturn extends AccountState {
   refetch: () => Promise<void>;
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+function mapBalances(raw: Horizon.HorizonApi.BalanceLine[]): StellarBalance[] {
+  return raw.map((b) => {
+    if (b.asset_type === "native") {
+      return { asset_type: "native", balance: b.balance };
+    }
+    return {
+      asset_type: b.asset_type as "credit_alphanum4" | "credit_alphanum12",
+      balance: b.balance,
+      asset_code: (b as Horizon.HorizonApi.BalanceLineAsset).asset_code,
+      asset_issuer: (b as Horizon.HorizonApi.BalanceLineAsset).asset_issuer,
+    };
+  });
+}
 
-/**
- * Fetch and optionally poll a Stellar account by its public key.
- *
- * @example
- * ```tsx
- * const { data, isLoading, error } = useStellarAccount("G...");
- *
- * const xlmBalance = data?.balances.find(b => b.isNative);
- * ```
- */
 export function useStellarAccount(
   publicKey: string | null | undefined,
   options: UseStellarAccountOptions = {}
 ): UseStellarAccountReturn {
   const { enabled = true, refetchInterval = 0 } = options;
-  const { config } = useStellarContext();
+  const { server } = useStellarContext();
 
-  const [state, dispatch] = useReducer(reducer, {
-    data: null,
-    isLoading: false,
-    error: null,
-    lastFetchedAt: null,
-  });
-
+  const [data, setData] = useState<StellarAccountData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const fetch = useCallback(async () => {
-    if (!publicKey) return;
-
-    dispatch({ type: "FETCH_START" });
-
+  const fetchAccount = useCallback(async () => {
+    if (!publicKey || !enabled) return;
+    setIsLoading(true);
+    setError(null);
     try {
-      const server = new Horizon.Server(config.horizonUrl);
       const raw = await server.loadAccount(publicKey);
-      dispatch({ type: "FETCH_SUCCESS", payload: parseAccountResponse(raw) });
-    } catch (err) {
-      dispatch({
-        type: "FETCH_ERROR",
-        payload: err instanceof Error ? err : new Error(String(err)),
+      setData({
+        balances: mapBalances(raw.balances),
+        sequence: raw.sequenceNumber(),
+        raw,
       });
+      setLastFetchedAt(new Date());
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setIsLoading(false);
     }
-  }, [publicKey, config.horizonUrl]);
+  }, [publicKey, enabled, server]);
 
-  // Initial fetch + re-fetch when publicKey or config changes
   useEffect(() => {
-    if (!enabled || !publicKey) {
-      dispatch({ type: "RESET" });
-      return;
-    }
-    void fetch();
-  }, [enabled, publicKey, fetch]);
+    fetchAccount();
+  }, [fetchAccount]);
 
-  // Polling
   useEffect(() => {
-    if (!enabled || !publicKey || refetchInterval <= 0) return;
-
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    if (refetchInterval > 0) {
+      intervalRef.current = setInterval(fetchAccount, refetchInterval);
     }
-
-    const intervalId = setInterval(() => void fetch(), refetchInterval);
-    intervalRef.current = intervalId;
     return () => {
-      clearInterval(intervalId);
-      if (intervalRef.current === intervalId) {
-        intervalRef.current = null;
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [enabled, publicKey, refetchInterval, fetch]);
+  }, [fetchAccount, refetchInterval]);
 
-  return { ...state, refetch: fetch };
+  return { data, isLoading, error, lastFetchedAt, refetch: fetchAccount };
 }
