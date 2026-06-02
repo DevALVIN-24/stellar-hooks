@@ -67,7 +67,7 @@ These hooks replace the core library's manual state management with SWR. Each re
 | Hook | Description |
 |------|-------------|
 | `useStellarAccount(publicKey, options?)` | Fetch account data from Horizon |
-| `useStellarBalance(publicKey, options?)` | Convenience wrapper with `xlmBalance` |
+| `useStellarBalance(publicKey, asset?, options?)` | Convenience wrapper with `xlmBalance` and `assetBalance` |
 | `useStellarOffers(publicKey, options?)` | Fetch open offers from Horizon |
 | `useStellarToml(domain, options?)` | Fetch & parse a domain's stellar.toml |
 | `useLedgerEntry(ledgerKey, options?)` | Read a Soroban ledger entry |

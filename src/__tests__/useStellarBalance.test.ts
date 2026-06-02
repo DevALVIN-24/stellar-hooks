@@ -32,7 +32,7 @@ const MULTI_ASSET_DATA = {
   data: {
     balances: [
       { assetType: "native", balance: "100.0000000", balanceFloat: 100, isNative: true },
-      { assetType: "credit_alphanum4", assetCode: "USDC", balance: "50.0000000", balanceFloat: 50, isNative: false },
+      { assetType: "credit_alphanum4", assetCode: "USDC", assetIssuer: "GISSUER", balance: "50.0000000", balanceFloat: 50, isNative: false },
     ],
   },
   isLoading: false,
@@ -65,6 +65,25 @@ describe("useStellarBalance", () => {
     expect(result.current.xlmBalance?.balance).toBe("100.0000000");
     expect(result.current.balances).toHaveLength(2);
     expect(result.current.balances.find(b => b.assetCode === "USDC")).toBeDefined();
+  });
+
+  it("returns specific asset balance when asset is provided", () => {
+    const usdcAsset = { code: "USDC", issuer: "GISSUER" };
+    mockUseStellarAccount.mockReturnValue(MULTI_ASSET_DATA as any);
+
+    const { result } = renderHook(() => useStellarBalance("GABC...", usdcAsset));
+
+    expect(result.current.assetBalance?.assetCode).toBe("USDC");
+    expect(result.current.assetBalance?.balance).toBe("50.0000000");
+  });
+
+  it("returns null assetBalance when trustline is missing", () => {
+    const missingAsset = { code: "BONY", issuer: "GOTHER" };
+    mockUseStellarAccount.mockReturnValue(MULTI_ASSET_DATA as any);
+
+    const { result } = renderHook(() => useStellarBalance("GABC...", missingAsset));
+
+    expect(result.current.assetBalance).toBeNull();
   });
 
   it("returns null xlmBalance when account data is missing", () => {

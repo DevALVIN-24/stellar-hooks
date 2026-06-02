@@ -127,16 +127,17 @@ const {
 
 ### `useStellarBalance(publicKey, options?)`
 
-Convenience wrapper around `useStellarAccount` that surfaces the XLM balance at the top level.
+Convenience wrapper around `useStellarAccount` that surfaces the XLM balance and optionally a specific asset balance.
 
 ```ts
 const {
-  balances,    // StellarBalance[]
-  xlmBalance,  // StellarBalance | null  (the native XLM entry)
+  balances,     // StellarBalance[]
+  xlmBalance,   // StellarBalance | null  (the native XLM entry)
+  assetBalance, // StellarBalance | null  (the specific asset requested, if any)
   isLoading,
   error,
   refetch,
-} = useStellarBalance("G...");
+} = useStellarBalance("G...", { code: "USDC", issuer: "G..." });
 ```
 
 ---

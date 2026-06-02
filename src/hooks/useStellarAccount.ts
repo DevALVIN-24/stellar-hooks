@@ -23,6 +23,8 @@ export interface UseStellarAccountOptions {
 export interface UseStellarAccountReturn {
   /** The parsed account data. Matches 'account' in issue #63. */
   account: StellarAccountData | null;
+  /** Alias for account, maintained for backward compatibility. */
+  data: StellarAccountData | null;
   isLoading: boolean;
   error: Error | null;
   /** Timestamp of the last successful fetch. */

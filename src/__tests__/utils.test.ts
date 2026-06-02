@@ -13,8 +13,6 @@
 
 import { describe, it, expect } from "vitest";
 import { parseAccountResponse } from "../utils";       
-import { NETWORK_CONFIGS } from "../types";            
-import { parseAccountResponse } from "../utils";
 import { NETWORK_CONFIGS } from "../types";
 import type { StellarBalance } from "../types";
 import type { Horizon } from "@stellar/stellar-sdk";
