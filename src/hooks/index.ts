@@ -7,6 +7,9 @@ export type { UseStellarBalanceReturn } from "./useStellarBalance";
 export { useStellarOffers } from "./useStellarOffers";
 export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./useStellarOffers";
 
+export { useEffects } from "./useEffects";
+export type { UseEffectsOptions, UseEffectsReturn } from "./useEffects";
+
 export { useFreighter } from "./useFreighter";
 
 export { useTrades } from "./useTrades";

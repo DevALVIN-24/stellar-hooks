@@ -19,6 +19,7 @@ export { useLedgerEntry } from "./hooks/useLedgerEntry";
 export { useStellarToml } from "./hooks/useStellarToml";
 export { useAssetMetadata } from "./hooks/useAssetMetadata";
 export { useStellarOffers } from "./hooks/useStellarOffers";
+export { useEffects } from "./hooks/useEffects";
 export { usePayment } from "./hooks/usePayment";
 export type {
   PaymentAsset,
@@ -68,6 +69,7 @@ export type {
 export type { StellarTomlData, UseStellarTomlReturn } from "./hooks/useStellarToml";
 export type { AssetMetadata, UseAssetMetadataReturn } from "./hooks/useAssetMetadata";
 export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./hooks/useStellarOffers";
+export type { UseEffectsOptions, UseEffectsReturn } from "./hooks/useEffects";
 
 // Network presets (useful for custom configs)
 export { NETWORK_CONFIGS } from "./types";
