@@ -5,7 +5,8 @@
  * @license MIT
  */
 
-import type { Horizon, rpc } from "@stellar/stellar-sdk";
+import type { Horizon } from "@stellar/stellar-sdk";
+import type * as rpc from "@stellar/stellar-sdk/rpc";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
 
