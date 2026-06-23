@@ -1064,6 +1064,7 @@ import type {
 ## Need help?
 
 - [stellar-hooks README](../README.md)
+- [Freighter API v1 → v6 migration guide](./freighter-api-migration.md)
 - [GitHub Issues](https://github.com/dark-princezz/stellar-hooks/issues)
 - [Stellar Developer Docs](https://developers.stellar.org)
 - [Freighter API Docs](https://docs.freighter.app)
