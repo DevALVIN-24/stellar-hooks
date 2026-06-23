@@ -31,6 +31,11 @@ export type {
   UsePathPaymentOptions,
   UsePathPaymentReturn,
 } from "./hooks/usePathPayment";
+export { useInflation } from "./hooks/useInflation";
+export type {
+  UseInflationOptions,
+  UseInflationReturn,
+} from "./hooks/useInflation";
 
 export { useSorobanTokenBalance } from "./hooks/useSorobanTokenBalance";
 export type {
