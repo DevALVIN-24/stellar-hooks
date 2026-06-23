@@ -25,6 +25,11 @@ export type {
   UsePaymentOptions,
   UsePaymentReturn,
 } from "./hooks/usePayment";
+export { useBumpSequence } from "./hooks/useBumpSequence";
+export type {
+  UseBumpSequenceOptions,
+  UseBumpSequenceReturn,
+} from "./hooks/useBumpSequence";
 export { usePathPayment } from "./hooks/usePathPayment";
 export type {
   PathPaymentAsset,
