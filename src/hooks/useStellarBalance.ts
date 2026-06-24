@@ -7,7 +7,7 @@
 
 import { useMemo } from "react";
 import { useStellarAccount, type UseStellarAccountOptions } from "./useStellarAccount";
-import type { StellarBalance, StellarAccountData } from "../types";
+import type { StellarBalance, StellarAccountData, StellarPublicKey } from "../types";
 
 export interface UseStellarBalanceReturn {
   balances: StellarBalance[];
@@ -24,7 +24,7 @@ export interface UseStellarBalanceReturn {
  * Convenience wrapper around useStellarAccount that surfaces the native XLM balance
  * and optionally a specific asset balance.
  *
- * @param {string | null | undefined} publicKey - The public key of the account to fetch.
+ * @param {StellarPublicKey | null | undefined} publicKey - The public key of the account to fetch.
  * @param {{ code: string; issuer: string } | UseStellarAccountOptions} [assetOrOptions] - Specific asset to find, or configuration options.
  * @param {UseStellarAccountOptions} [options] - Configuration options (if asset is provided as 2nd arg).
  * @returns {UseStellarBalanceReturn}
@@ -42,7 +42,7 @@ export interface UseStellarBalanceReturn {
  * ```
  */
 export function useStellarBalance(
-  publicKey: string | null | undefined,
+  publicKey: StellarPublicKey | null | undefined,
   assetOrOptions?: { code: string; issuer: string } | UseStellarAccountOptions | null,
   options?: UseStellarAccountOptions
 ): UseStellarBalanceReturn {

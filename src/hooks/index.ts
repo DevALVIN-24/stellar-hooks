@@ -7,6 +7,9 @@ export type { UseStellarBalanceReturn } from "./useStellarBalance";
 export { useStellarOffers } from "./useStellarOffers";
 export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./useStellarOffers";
 
+export { useEffects } from "./useEffects";
+export type { UseEffectsOptions, UseEffectsReturn } from "./useEffects";
+
 export { useFreighter } from "./useFreighter";
 
 export { useTrades } from "./useTrades";
@@ -35,10 +38,49 @@ export type {
   UsePaymentOptions,
   UsePaymentReturn,
 } from "./usePayment";
+export { useBumpSequence } from "./useBumpSequence";
+export type {
+  UseBumpSequenceOptions,
+  UseBumpSequenceReturn,
+} from "./useBumpSequence";
 export { usePathPayment } from "./usePathPayment";
+export { useInflation } from "./useInflation";
+export type { UseInflationOptions, UseInflationReturn } from "./useInflation";
+export { useTrade } from "./useTrade";
+export type {
+  TradeAsset,
+  PlaceOfferParams,
+  ModifyOfferParams,
+  CancelOfferParams,
+  UseTradeOptions,
+  UseTradeReturn,
+} from "./useTrade";
+
+export { useAccountFlags } from "./useAccountFlags";
+export type {
+  AccountFlag,
+  UseAccountFlagsOptions,
+  UseAccountFlagsReturn,
+} from "./useAccountFlags";
+
+export { useAccountMerge } from "./useAccountMerge";
+export type {
+  UseAccountMergeOptions,
+  UseAccountMergeReturn,
+} from "./useAccountMerge";
 
 export { useSorobanTokenBalance } from "./useSorobanTokenBalance";
 export type {
   SorobanTokenBalanceState,
   UseSorobanTokenBalanceOptions,
 } from "./useSorobanTokenBalance";
+
+export { useCreateAccount } from "./useCreateAccount";
+export type { UseCreateAccountOptions, UseCreateAccountReturn } from "./useCreateAccount";
+
+export { useAssets } from "./useAssets";
+export type { UseAssetsOptions, UseAssetsReturn } from "./useAssets";
+export { useManageData } from "./useManageData";
+export type { UseManageDataOptions, UseManageDataReturn } from "./useManageData";
+export { useOperations } from "./useOperations";
+export type { UseOperationsOptions, UseOperationsReturn } from "./useOperations";

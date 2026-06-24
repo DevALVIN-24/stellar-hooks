@@ -6,7 +6,8 @@
  */
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { rpc, xdr } from "@stellar/stellar-sdk";
+import { xdr } from "@stellar/stellar-sdk";
+import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
 import type { LedgerEntryState } from "../types";
 import { getCache, setCache } from "../utils";

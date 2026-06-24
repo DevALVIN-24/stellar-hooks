@@ -15,6 +15,9 @@ import { Horizon } from "@stellar/stellar-sdk";
 vi.mock("@stellar/stellar-sdk", () => {
   const mockLoadAccount = vi.fn();
   return {
+    StrKey: {
+      isValidEd25519PublicKey: vi.fn().mockReturnValue(true),
+    },
     Horizon: {
       Server: vi.fn().mockImplementation(() => ({
         loadAccount: mockLoadAccount,

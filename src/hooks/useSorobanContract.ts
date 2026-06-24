@@ -8,18 +8,20 @@
 import { useCallback, useReducer } from "react";
 import {
   Contract,
-  rpc,
-  Transaction,
   TransactionBuilder,
-  Networks,
   BASE_FEE,
   xdr,
   nativeToScVal,
 } from "@stellar/stellar-sdk";
+import type { Transaction } from "@stellar/stellar-sdk";
+import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
-import type { ContractCallOptions, UseContractCallReturn, TransactionStatus } from "../types";
+import type { ContractCallOptions, UseContractCallReturn, TransactionStatus, StellarContractId, StellarXdrString } from "../types";
+import { unsafeAsXdrString } from "../types";
 import { sleep, backoff } from "../utils";
+import type { ContractCallOptions, UseContractCallReturn, TransactionStatus } from "../types";
+import { sleep, backoff, validateContractId } from "../utils";
 
 // ─── State ─────────────────────────────────────────────────────────────────────
 
@@ -90,7 +92,7 @@ function createReducer<TResult>() {
  * ```
  */
 export function useSorobanContract<TResult = unknown>(
-  contractId: string,
+  contractId: StellarContractId,
   options: Omit<ContractCallOptions<TResult>, "contractId">
 ): UseContractCallReturn<TResult> {
   const { config } = useStellarContext();
@@ -134,6 +136,9 @@ export function useSorobanContract<TResult = unknown>(
       }
 
       try {
+        // ── 0. Validate inputs ───────────────────────────────────────────────
+        validateContractId(contractId);
+
         // ── 1. Build ──────────────────────────────────────────────────────────
         dispatch({ type: "BUILDING" });
 
@@ -169,7 +174,7 @@ export function useSorobanContract<TResult = unknown>(
         // ── 3. Sign ───────────────────────────────────────────────────────────
         dispatch({ type: "SIGNING" });
 
-        const signedXdr = await signTransaction(preparedTx.toXDR(), {
+        const signedXdr = await signTransaction(unsafeAsXdrString(preparedTx.toXDR()), {
           networkPassphrase: passphrase,
         });
 
@@ -256,6 +261,7 @@ export function useSorobanContract<TResult = unknown>(
       }
 
       try {
+        validateContractId(contractId);
         const server = sorobanRpcServer ?? new rpc.Server(config.sorobanRpcUrl);
         const contract = new Contract(contractId);
 

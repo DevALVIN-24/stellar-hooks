@@ -1,0 +1,65 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/index.ts",
+    "packages/query/src/index.ts",
+    "packages/swr/src/index.ts"
+  ],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "theme": "markdown",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "excludeInternal": true,
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__mocks__/**",
+    "**/__tests__/**",
+    "**/node_modules/**",
+    "**/dist/**"
+  ],
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Provider & Context",
+    "Wallet / Freighter",
+    "Account",
+    "Soroban Contract",
+    "Transactions",
+    "Payments",
+    "Network & Utils",
+    "React Query Adapter",
+    "SWR Adapter",
+    "Types",
+    "Utilities",
+    "*"
+  ],
+  "groupOrder": [
+    "Provider & Context",
+    "Wallet / Freighter",
+    "Account",
+    "Soroban Contract",
+    "Transactions",
+    "Payments",
+    "Network & Utils",
+    "React Query Adapter",
+    "SWR Adapter",
+    "Types",
+    "Utilities",
+    "*"
+  ],
+  "readme": "none",
+  "tsconfig": "tsconfig.json",
+  "skipErrorChecking": true,
+  "treatWarningsAsErrors": false,
+  "disableSources": true,
+  "hideGenerator": true,
+  "hideBreadcrumbs": false,
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": false
+  }
+}

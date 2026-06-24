@@ -4,6 +4,7 @@ import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
 import { useTransaction } from "./useTransaction";
 import type { TransactionStatus } from "../types";
+import { validatePublicKey } from "../utils";
 
 export interface UseStellarTransactionOptions {
   /** Target base fee in stroops. Default: 100 */
@@ -60,6 +61,7 @@ export function useStellarTransaction(options: UseStellarTransactionOptions = {}
     // If fee bump is configured, construct and sign the FeeBump transaction wrapping the inner tx
     if (feeBump) {
       const sponsorAddress = feeBump.sponsor || publicKey;
+      validatePublicKey(sponsorAddress, "feeBump.sponsor");
       const innerTxSigned = TransactionBuilder.fromXDR(signedInnerXdr, config.networkPassphrase);
       const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
         sponsorAddress,
