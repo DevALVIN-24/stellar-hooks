@@ -8,10 +8,8 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
-import { parseAccountResponse } from "../utils";
 import type { StellarAccountData, StellarPublicKey } from "../types";
 import { parseAccountResponse, validatePublicKey } from "../utils";
-import type { StellarAccountData } from "../types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

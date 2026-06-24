@@ -46,7 +46,7 @@ export function StellarProvider({
     if (savedCustomConfig) {
       try {
         setCustomConfig(JSON.parse(savedCustomConfig));
-      } catch {}
+      } catch { /* ignore invalid JSON in localStorage */ }
     }
   }, []);
 

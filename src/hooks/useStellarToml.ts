@@ -10,10 +10,10 @@ import { StellarToml } from "@stellar/stellar-sdk";
 import { getCache, setCache } from "../utils";
 
 export interface StellarTomlData {
-  CURRENCIES?: Array<Record<string, any>>;
-  VALIDATORS?: Array<Record<string, any>>;
-  DOCUMENTATION?: Record<string, any>;
-  [key: string]: any;
+  CURRENCIES?: Array<Record<string, unknown>>;
+  VALIDATORS?: Array<Record<string, unknown>>;
+  DOCUMENTATION?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 export interface UseStellarTomlOptions {

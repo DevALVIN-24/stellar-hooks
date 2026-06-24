@@ -77,8 +77,9 @@ describe("useStellarAccount", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.data?.balances).toHaveLength(1);
-    expect(result.current.data?.balances[0].isNative).toBe(true);
-    expect(result.current.data?.balances[0].balance).toBe("100.0000000");
+    const firstBalance = result.current.data?.balances[0];
+    expect(firstBalance?.isNative).toBe(true);
+    expect(firstBalance?.balance).toBe("100.0000000");
   });
 
   it("handles account with multiple custom assets", async () => {

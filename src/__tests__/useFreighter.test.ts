@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import React from "react";
 import { useFreighter } from "../hooks/useFreighter";
@@ -23,12 +23,9 @@ import {
   signAuthEntry,
   signMessage,
   signBlob,
-} from "../__mocks__/@stellar/freighter-api";
+} from "@stellar/freighter-api";
 
-// Note: vitest.config.ts already aliases "@stellar/freighter-api" to the
-// manual mock file, so the hook and this test share the exact same vi.fn()
-// instances. Calling vi.mock() here would auto-mock and clobber the resolved
-// values, so we deliberately omit it.
+
 
 beforeEach(() => {
   resetFreighterMocks();
@@ -62,11 +59,11 @@ describe("useFreighter — installed but not connected", () => {
 
 describe("useFreighter — connected", () => {
   it("sets publicKey, network, and networkPassphrase when connected", async () => {
-    mockFreighterConnected("GDEMO123PUBLICKEY", "TESTNET", "Test SDF Network ; September 2015");
+    mockFreighterConnected("GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ", "TESTNET", "Test SDF Network ; September 2015");
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.isConnected).toBe(true);
-    expect(result.current.publicKey).toBe("GDEMO123PUBLICKEY");
+    expect(result.current.publicKey).toBe("GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ");
     expect(result.current.network).toBe("TESTNET");
     expect(result.current.networkPassphrase).toBe("Test SDF Network ; September 2015");
     expect(result.current.networkPassphraseMismatch).toBe(false);
@@ -143,6 +140,9 @@ describe("useFreighter — connect()", () => {
     getAddress.mockResolvedValue({ address: "GNEW456PUBLICKEY", error: null });
     getNetwork.mockResolvedValue({ network: "TESTNET", networkPassphrase: "Test SDF Network ; September 2015" });
     getNetworkDetails.mockResolvedValue({ network: "TESTNET", networkPassphrase: "Test SDF Network ; September 2015" });
+    vi.mocked(requestAccess).mockResolvedValue({ address: "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UR", error: null });
+    vi.mocked(getAddress).mockResolvedValue({ address: "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UR", error: null });
+    vi.mocked(getNetwork).mockResolvedValue({ network: "TESTNET", networkPassphrase: "Test SDF Network ; September 2015" });
 
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -152,11 +152,11 @@ describe("useFreighter — connect()", () => {
     });
 
     expect(result.current.isConnected).toBe(true);
-    expect(result.current.publicKey).toBe("GNEW456PUBLICKEY");
+    expect(result.current.publicKey).toBe("GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UR");
   });
 
   it("sets error when requestAccess fails", async () => {
-    requestAccess.mockRejectedValue(new Error("User rejected"));
+    vi.mocked(requestAccess).mockRejectedValue(new Error("User rejected"));
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -198,32 +198,33 @@ describe("useFreighter — error state", () => {
 describe("useFreighter — signTransaction()", () => {
   it("returns signed XDR", async () => {
     mockFreighterConnected();
-    signTransaction.mockResolvedValue({ signedTxXdr: "signed-result-xdr", error: null });
+    vi.mocked(signTransaction).mockResolvedValue({ signedTxXdr: "signed-result-xdr", error: null });
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isConnected).toBe(true));
 
-    const signed = await result.current.signTransaction("raw-xdr");
+    const signed = await result.current.signTransaction("raw-xdr" as any);
     expect(signed).toBe("signed-result-xdr");
   });
 
   it("throws when signTransaction returns error", async () => {
     mockFreighterConnected();
     signTransaction.mockResolvedValue({ signedTxXdr: "", error: { message: "Sign failed" } });
+    vi.mocked(signTransaction).mockResolvedValue({ signedTxXdr: "", error: { message: "Sign failed" } });
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isConnected).toBe(true));
 
-    await expect(result.current.signTransaction("raw-xdr")).rejects.toThrow("Sign failed");
+    await expect(result.current.signTransaction("raw-xdr" as any)).rejects.toThrow("Sign failed");
   });
 });
 
 describe("useFreighter — signAuthEntry()", () => {
   it("returns signed auth entry", async () => {
     mockFreighterConnected();
-    signAuthEntry.mockResolvedValue({ signedAuthEntry: "signed-auth", error: null });
+    vi.mocked(signAuthEntry).mockResolvedValue({ signedAuthEntry: "signed-auth", error: null });
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isConnected).toBe(true));
 
-    const signed = await result.current.signAuthEntry("entry-xdr");
+    const signed = await result.current.signAuthEntry("entry-xdr" as any);
     expect(signed).toBe("signed-auth");
   });
 });
@@ -232,6 +233,7 @@ describe("useFreighter — signBlob()", () => {
   it("returns signed blob", async () => {
     mockFreighterConnected();
     signMessage.mockResolvedValue({ signedMessage: "signed-blob-result", error: null });
+    vi.mocked(signBlob).mockResolvedValue({ signedMessage: "signed-blob-result", error: null });
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isConnected).toBe(true));
 

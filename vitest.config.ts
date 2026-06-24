@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -31,6 +32,12 @@ export default defineConfig({
         "./src/__mocks__/@walletconnect/sign-client.ts",
         import.meta.url
       ).pathname,
+      "@creit-tech/stellar-wallets-kit/sdk": fileURLToPath(
+        new URL("./src/__mocks__/@creit-tech/stellar-wallets-kit-sdk.ts", import.meta.url)
+      ),
+      "@walletconnect/sign-client": fileURLToPath(
+        new URL("./src/__mocks__/@walletconnect/sign-client.ts", import.meta.url)
+      ),
     },
   },
 });

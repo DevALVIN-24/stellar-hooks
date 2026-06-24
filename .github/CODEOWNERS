@@ -1,0 +1,11 @@
+# CODEOWNERS — auto-assigns reviewers when pull requests are opened.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Format: <path-pattern>  @<github-username-or-team>
+#
+# Entries are ordered from least specific to most specific.
+# Later entries override earlier ones for the same path.
+
+# ===== Default ownership =====
+# Repository owner is the default reviewer for all paths
+*  @Amas-01

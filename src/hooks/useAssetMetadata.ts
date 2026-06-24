@@ -7,6 +7,7 @@
 import { useMemo } from "react";
 import { useStellarAccount } from "./useStellarAccount";
 import { useStellarToml } from "./useStellarToml";
+import { asPublicKey } from "../types";
 
 export interface AssetMetadata {
   code?: string;
@@ -14,7 +15,7 @@ export interface AssetMetadata {
   name?: string;
   desc?: string;
   image?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -49,7 +50,7 @@ export function useAssetMetadata(
     data: accountData,
     isLoading: isAccountLoading,
     error: accountError,
-  } = useStellarAccount(assetIssuer || "", { enabled: !!assetIssuer });
+  } = useStellarAccount(assetIssuer ? asPublicKey(assetIssuer) : null, { enabled: !!assetIssuer });
 
   const homeDomain = accountData?.raw?.home_domain;
   const { data: tomlData, isLoading: isTomlLoading, error: tomlError } = useStellarToml(homeDomain);

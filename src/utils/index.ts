@@ -6,6 +6,7 @@
 
 import type { Horizon } from "@stellar/stellar-sdk";
 import type { StellarAccountData } from "../types";
+import { unsafeAsPublicKey, unsafeAsAssetIssuer } from "../types";
 
 export {
   validatePublicKey,
@@ -20,11 +21,11 @@ export {
  */
 export function parseAccountResponse(raw: Horizon.AccountResponse): StellarAccountData {
   return {
-    accountId: raw.account_id,
+    accountId: unsafeAsPublicKey(raw.account_id),
     sequence: raw.sequence,
     subentryCount: raw.subentry_count,
-    numSponsored: (raw as any).num_sponsored ?? 0,
-    numSponsoring: (raw as any).num_sponsoring ?? 0,
+    numSponsored: (raw as Horizon.AccountResponse & { num_sponsored?: number }).num_sponsored ?? 0,
+    numSponsoring: (raw as Horizon.AccountResponse & { num_sponsoring?: number }).num_sponsoring ?? 0,
     thresholds: {
       lowThreshold: raw.thresholds.low_threshold,
       medThreshold: raw.thresholds.med_threshold,
@@ -43,7 +44,7 @@ export function parseAccountResponse(raw: Horizon.AccountResponse): StellarAccou
         return {
           assetType: b.asset_type,
           ...(isAsset && { assetCode: (b as Horizon.HorizonApi.BalanceLineAsset).asset_code }),
-          ...(isAsset && { assetIssuer: (b as Horizon.HorizonApi.BalanceLineAsset).asset_issuer }),
+          ...(isAsset && { assetIssuer: unsafeAsAssetIssuer((b as Horizon.HorizonApi.BalanceLineAsset).asset_issuer) }),
           balance: b.balance,
           balanceFloat: parseFloat(b.balance),
           buyingLiabilities: isAsset || b.asset_type === "native"
@@ -76,7 +77,7 @@ export function backoff(attempt: number, base = 1000) {
 
 // ─── Simple In-Memory Cache ───────────────────────────────────────────────────
 
-const cache = new Map<string, { data: any; expires: number }>();
+const cache = new Map<string, { data: unknown; expires: number }>();
 
 export function getCache<T>(key: string): T | null {
   const item = cache.get(key);

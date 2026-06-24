@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`exported types snapshot 1`] = `
+[
+  "NETWORK_CONFIGS",
+  "asAssetIssuer",
+  "asContractId",
+  "asPublicKey",
+  "asTxHash",
+  "asXdrString",
+  "unsafeAsAssetIssuer",
+  "unsafeAsContractId",
+  "unsafeAsPublicKey",
+  "unsafeAsTxHash",
+  "unsafeAsXdrString",
+]
+`;

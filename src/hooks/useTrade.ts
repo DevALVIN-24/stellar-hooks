@@ -16,6 +16,7 @@ import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString } from "../types";
 
 export type TradeAsset =
   | { type: "native" }
@@ -126,7 +127,7 @@ export function useTrade(options: UseTradeOptions = {}): UseTradeReturn {
       const builtXdr = tx.toXDR();
 
       // 3. Sign transaction XDR via Freighter wallet
-      const signedXdr = await signTransaction(builtXdr, {
+      const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
         networkPassphrase: config.networkPassphrase,
       });
 

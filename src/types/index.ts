@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import type { Horizon } from "@stellar/stellar-sdk";
+import type { Horizon, xdr } from "@stellar/stellar-sdk";
 import type * as rpc from "@stellar/stellar-sdk/rpc";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
@@ -22,28 +22,41 @@ export interface NetworkConfig {
   networkPassphrase: string;
 }
 
-export {
-  // Branded types
+import {
   type StellarPublicKey,
   type StellarContractId,
   type StellarXdrString,
   type StellarTxHash,
   type StellarAssetIssuer,
-  
-  // Factory functions
   asPublicKey,
   asContractId,
   asXdrString,
   asTxHash,
   asAssetIssuer,
-  
-  // Unsafe casts
   unsafeAsPublicKey,
   unsafeAsContractId,
   unsafeAsXdrString,
   unsafeAsTxHash,
   unsafeAsAssetIssuer,
 } from "./branded";
+
+export {
+  type StellarPublicKey,
+  type StellarContractId,
+  type StellarXdrString,
+  type StellarTxHash,
+  type StellarAssetIssuer,
+  asPublicKey,
+  asContractId,
+  asXdrString,
+  asTxHash,
+  asAssetIssuer,
+  unsafeAsPublicKey,
+  unsafeAsContractId,
+  unsafeAsXdrString,
+  unsafeAsTxHash,
+  unsafeAsAssetIssuer,
+};
 
 /**
  * Endpoint configuration for a private or self-hosted Stellar network.
@@ -205,11 +218,11 @@ export interface TransactionState<TResult = unknown> {
 
 // ─── Soroban Contract ─────────────────────────────────────────────────────────
 
-export interface ContractCallOptions<TResult = any> {
+export interface ContractCallOptions<TResult = unknown> {
   /** Soroban contract address (C...) */
   contractId: StellarContractId;
   method: string;
-  args?: unknown[];
+  args?: xdr.ScVal[];
   /** Fee in stroops. Defaults to 100 */
   fee?: number;
   /** Timeout in seconds. Defaults to 30 */
@@ -224,7 +237,7 @@ export interface ContractCallOptions<TResult = any> {
    * Optional function to parse the raw xdr.ScVal result to your desired TResult type.
    * If not provided, the raw xdr.ScVal is returned (or tx hash as fallback).
    */
-  parseResult?: (scVal: any) => TResult;
+  parseResult?: (scVal: xdr.ScVal) => TResult;
 }
 
 export interface UseContractCallReturn<TResult = unknown>

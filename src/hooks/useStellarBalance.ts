@@ -71,7 +71,7 @@ export function useStellarBalance(
     return (
       balances.find((b) => b.assetCode === asset.code && b.assetIssuer === asset.issuer) ?? null
     );
-  }, [balances, asset?.code, asset?.issuer]);
+  }, [balances, asset]);
 
   return {
     balances,

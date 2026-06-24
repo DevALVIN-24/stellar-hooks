@@ -13,12 +13,13 @@ import { useLedgerEntry } from "../hooks/useLedgerEntry";
 
 const mockGetLedgerEntries = vi.fn();
 
+vi.mock("@stellar/stellar-sdk/rpc", () => ({
+  Server: vi.fn().mockImplementation(() => ({
+    getLedgerEntries: mockGetLedgerEntries,
+  })),
+}));
+
 vi.mock("@stellar/stellar-sdk", () => ({
-  rpc: {
-    Server: vi.fn().mockImplementation(() => ({
-      getLedgerEntries: mockGetLedgerEntries,
-    })),
-  },
   xdr: {},
 }));
 

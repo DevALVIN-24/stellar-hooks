@@ -1,9 +1,10 @@
 import { useCallback } from "react";
-import { Horizon, TransactionBuilder, Operation } from "@stellar/stellar-sdk";
+import { Horizon, TransactionBuilder, xdr } from "@stellar/stellar-sdk";
+import { Horizon, Transaction, TransactionBuilder, xdr } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
 import { useTransaction } from "./useTransaction";
-import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString, type TransactionStatus } from "../types";
 import { validatePublicKey } from "../utils";
 
 export interface UseStellarTransactionOptions {
@@ -21,7 +22,7 @@ export interface UseStellarTransactionOptions {
 }
 
 export interface UseStellarTransactionReturn {
-  submit: (operations: Operation[]) => Promise<void>;
+  submit: (operations: xdr.Operation[]) => Promise<void>;
   status: TransactionStatus;
   txHash: string | null;
   isLoading: boolean;
@@ -42,7 +43,7 @@ export function useStellarTransaction(options: UseStellarTransactionOptions = {}
     ...(onError && { onError }),
   });
 
-  const submit = useCallback(async (operations: Operation[]) => {
+  const submit = useCallback(async (operations: xdr.Operation[]) => {
     if (!publicKey) throw new Error("Freighter is not connected. Call connect() first.");
 
     const server = new Horizon.Server(config.horizonUrl);
@@ -56,7 +57,7 @@ export function useStellarTransaction(options: UseStellarTransactionOptions = {}
     operations.forEach(op => builder.addOperation(op));
 
     const builtTx = builder.build();
-    const signedInnerXdr = await signTransaction(builtTx.toXDR(), { networkPassphrase: config.networkPassphrase });
+    const signedInnerXdr = await signTransaction(unsafeAsXdrString(builtTx.toXDR()), { networkPassphrase: config.networkPassphrase });
 
     // If fee bump is configured, construct and sign the FeeBump transaction wrapping the inner tx
     if (feeBump) {
@@ -66,11 +67,11 @@ export function useStellarTransaction(options: UseStellarTransactionOptions = {}
       const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
         sponsorAddress,
         feeBump.fee,
-        innerTxSigned as any,
+        innerTxSigned as Transaction,
         config.networkPassphrase
       );
       
-      const signedFeeBumpXdr = await signTransaction(feeBumpTx.toXDR(), { 
+      const signedFeeBumpXdr = await signTransaction(unsafeAsXdrString(feeBumpTx.toXDR()), { 
         networkPassphrase: config.networkPassphrase,
         address: sponsorAddress
       });

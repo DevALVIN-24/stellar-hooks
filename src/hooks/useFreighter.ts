@@ -43,6 +43,7 @@ function getNetworkPassphraseMismatch(
   );
 }
 import type { FreighterState, SignTransactionOptions, UseFreighterReturn } from "../types";
+import type { FreighterState, SignTransactionOptions, UseFreighterReturn, StellarPublicKey, StellarXdrString } from "../types";
 import { asPublicKey, unsafeAsXdrString } from "../types";
 
 // ─── State Machine ────────────────────────────────────────────────────────────

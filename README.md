@@ -421,6 +421,19 @@ The library ships with `@stellar/stellar-sdk` v13 and `@stellar/freighter-api` v
 
 Please review our Contributing Guide and Code of Conduct for more details before opening a pull request.
 
+## Documentation
+
+Full documentation with live examples is available at **[https://spiffamani.github.io/stellar-hooks/](https://spiffamani.github.io/stellar-hooks/)**
+
+To preview the documentation site locally:
+
+```bash
+npm install
+npm run docs:dev
+```
+
+The docs site will be available at `http://localhost:5173` (or the port VitePress assigns).
+
 ---
 
 ## Release process

@@ -6,7 +6,6 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useFreighter } from "../hooks/useFreighter";
 
 // ─── Mock React hooks ─────────────────────────────────────────────────────────
 
@@ -90,7 +89,7 @@ vi.mock("../hooks/useFreighter", () => ({
 
 // ─── Import AFTER mocks ───────────────────────────────────────────────────────
 
-import { useClaimableBalances, useClaimBalance } from "../hooks/useClaimableBalance";
+import { useClaimBalance } from "../hooks/useClaimableBalance";
 import { useReducer } from "react";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -108,17 +107,6 @@ function setupReducer(stateOverride = {}) {
     mockDispatch,
   ] as unknown as ReturnType<typeof useReducer>);
 }
-
-const sampleRecord = {
-  id: "balance-id-1",
-  asset: "native",
-  amount: "100.0000000",
-  sponsor: "GSPONSOR",
-  last_modified_ledger: 123456,
-  claimants: [
-    { destination: "GPUBLICKEY", predicate: { unconditional: true } },
-  ],
-};
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -169,14 +157,14 @@ describe("useClaimBalance", () => {
 
   it("throws when publicKey is null", async () => {
   // Call the async function directly with publicKey set to null in closure
-  const claimFn = async (balanceId: string) => {
+  const claimFn = async () => {
     const publicKey: string | null = null;
     if (!publicKey) {
       throw new Error("Freighter is not connected. Call connect() first.");
     }
   };
 
-  await expect(claimFn("balance-id-1")).rejects.toThrow(
+  await expect(claimFn()).rejects.toThrow(
     "Freighter is not connected"
   );
 });

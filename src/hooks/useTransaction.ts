@@ -9,7 +9,7 @@ import { useCallback, useReducer } from "react";
 import { TransactionBuilder, Horizon } from "@stellar/stellar-sdk";
 import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
-import type { TransactionState, TransactionStatus, StellarXdrString, StellarTxHash } from "../types";
+import type { TransactionState, TransactionStatus, StellarXdrString } from "../types";
 import { asTxHash } from "../types";
 import { sleep, backoff } from "../utils";
 
@@ -57,7 +57,7 @@ export interface UseTransactionReturn extends TransactionState {
 type Action =
   | { type: "RESET" }
   | { type: "STATUS"; payload: TransactionStatus }
-  | { type: "SUCCESS"; hash: string }
+  | { type: "SUCCESS"; hash: StellarTxHash }
   | { type: "ERROR"; payload: Error };
 
 function reducer(state: TransactionState, action: Action): TransactionState {

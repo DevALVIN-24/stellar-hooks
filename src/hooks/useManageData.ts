@@ -10,7 +10,7 @@ import { Horizon, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
-import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString, type TransactionStatus } from "../types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -119,7 +119,7 @@ export function useManageData(
         .build();
 
       // 3. Sign via Freighter
-      const signedXdr = await signTransaction(tx.toXDR(), {
+      const signedXdr = await signTransaction(unsafeAsXdrString(tx.toXDR()), {
         networkPassphrase: config.networkPassphrase,
       });
 

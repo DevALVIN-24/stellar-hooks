@@ -18,7 +18,6 @@ import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus, StellarPublicKey, StellarXdrString, StellarAssetIssuer } from "../types";
 import { unsafeAsXdrString } from "../types";
-import type { TransactionStatus } from "../types";
 import { validatePublicKey } from "../utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────

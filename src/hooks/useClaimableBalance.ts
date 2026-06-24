@@ -6,7 +6,6 @@
 
 import { useCallback, useReducer } from "react";
 import {
-  Asset,
   Horizon,
   Operation,
   TransactionBuilder,
@@ -14,7 +13,7 @@ import {
 import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
-import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString, type TransactionStatus } from "../types";
 import { validatePublicKey } from "../utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -71,6 +70,11 @@ export interface UseClaimableBalancesReturn extends ClaimableBalancesState {
  * return <button onClick={() => claim(balance.id)}>Claim</button>;
  * ```
  */
+export interface UseClaimBalanceOptions {
+  onSuccess?: (hash: string) => void;
+  onError?: (error: Error) => void;
+}
+
 export interface UseClaimBalanceReturn {
   claim: (balanceId: string) => Promise<void>;
   status: TransactionStatus;
@@ -218,7 +222,7 @@ export function useClaimBalance(
       const builtXdr = tx.toXDR();
 
       // 3. Sign via Freighter
-      const signedXdr = await signTransaction(builtXdr, {
+      const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
         networkPassphrase: config.networkPassphrase,
       });
 

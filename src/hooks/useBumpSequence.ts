@@ -11,6 +11,7 @@ import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString } from "../types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -89,7 +90,7 @@ export function useBumpSequence(options: UseBumpSequenceOptions): UseBumpSequenc
       .setTimeout(timeoutSeconds)
       .build();
 
-    const signedXdr = await signTransaction(tx.toXDR(), {
+    const signedXdr = await signTransaction(unsafeAsXdrString(tx.toXDR()), {
       networkPassphrase: config.networkPassphrase,
     });
 

@@ -119,3 +119,8 @@ export function unsafeAsXdrString(value: string): StellarXdrString {
 export function unsafeAsTxHash(value: string): StellarTxHash {
   return value as StellarTxHash;
 }
+
+/** UNSAFE: Cast a string to StellarAssetIssuer without validation. */
+export function unsafeAsAssetIssuer(value: string): StellarAssetIssuer {
+  return value as unknown as StellarAssetIssuer;
+}

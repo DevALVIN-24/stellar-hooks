@@ -37,7 +37,18 @@ export type {
   UsePathPaymentOptions,
   UsePathPaymentReturn,
 } from "./hooks/usePathPayment";
+export { useInflation } from "./hooks/useInflation";
+export type {
+  UseInflationOptions,
+  UseInflationReturn,
+} from "./hooks/useInflation";
 
+export { useAccountFlags } from "./hooks/useAccountFlags";
+export type {
+  AccountFlag,
+  UseAccountFlagsOptions,
+  UseAccountFlagsReturn,
+} from "./hooks/useAccountFlags";
 export { useTrade } from "./hooks/useTrade";
 export type {
   TradeAsset,
@@ -48,12 +59,36 @@ export type {
   UseTradeReturn,
 } from "./hooks/useTrade";
 
+export { useAccountMerge } from "./hooks/useAccountMerge";
+export type {
+  UseAccountMergeOptions,
+  UseAccountMergeReturn,
+} from "./hooks/useAccountMerge";
+
 export { useSorobanTokenBalance } from "./hooks/useSorobanTokenBalance";
 export { useWalletConnect } from "./hooks/useWalletConnect";
 export type {
   SorobanTokenBalanceState,
   UseSorobanTokenBalanceOptions,
 } from "./hooks/useSorobanTokenBalance";
+
+export { useMultiSig } from "./hooks/useMultiSig";
+export type {
+  BuildOptions,
+  UseMultiSigOptions,
+  UseMultiSigReturn,
+} from "./hooks/useMultiSig";
+
+export { useTrustline } from "./hooks/useTrustline";
+export type {
+  UseTrustlineOptions,
+  UseTrustlineReturn,
+} from "./hooks/useTrustline";
+export { useCreateAccount } from "./hooks/useCreateAccount";
+export type { UseCreateAccountOptions, UseCreateAccountReturn } from "./hooks/useCreateAccount";
+
+export { useAssets } from "./hooks/useAssets";
+export type { UseAssetsOptions, UseAssetsReturn } from "./hooks/useAssets";
 
 // Types
 export type {

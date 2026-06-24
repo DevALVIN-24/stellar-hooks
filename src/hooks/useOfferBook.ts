@@ -46,8 +46,6 @@ export function useOfferBook(options: UseOfferBookOptions) {
       isMounted = false;
       if (timeoutId) clearTimeout(timeoutId);
     };
-  // We stringify the asset objects to properly establish the React dependency array hook references.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.horizonUrl, options.selling.toString(), options.buying.toString(), options.limit, options.refetchInterval]);
 
   return { data, isLoading, error };
