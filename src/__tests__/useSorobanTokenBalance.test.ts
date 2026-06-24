@@ -14,12 +14,27 @@ import { useSorobanTokenBalance } from "../hooks/useSorobanTokenBalance";
 const mockSimulateTransaction = vi.fn();
 const mockGetAccount = vi.fn();
 
+vi.mock("@stellar/stellar-sdk/rpc", () => ({
+  Server: vi.fn().mockImplementation(() => ({
+    simulateTransaction: mockSimulateTransaction,
+    getAccount: mockGetAccount,
+  })),
+  Api: {
+    isSimulationError: (r: any) => typeof r.error === "string",
+    isSimulationSuccess: (r: any) => !r.error && r.result !== undefined,
+  },
+}));
+
 vi.mock("@stellar/stellar-sdk", () => {
   const addOperation = vi.fn().mockReturnThis();
   const setTimeout = vi.fn().mockReturnThis();
   const build = vi.fn().mockReturnValue({});
 
   return {
+    StrKey: {
+      isValidEd25519PublicKey: vi.fn().mockReturnValue(true),
+      isValidContract: vi.fn().mockReturnValue(true),
+    },
     rpc: {
       Server: vi.fn().mockImplementation(() => ({
         simulateTransaction: mockSimulateTransaction,
@@ -58,6 +73,8 @@ vi.mock("../context", () => ({
 vi.mock("../utils", () => ({
   getCache: vi.fn().mockReturnValue(null),
   setCache: vi.fn(),
+  validateContractId: vi.fn(),
+  validatePublicKey: vi.fn(),
 }));
 
 const CONTRACT_ID = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";

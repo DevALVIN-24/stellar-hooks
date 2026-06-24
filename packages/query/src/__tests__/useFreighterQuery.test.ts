@@ -1,33 +1,57 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { useFreighterQuery } from "../hooks/useFreighterQuery";
 
+const mockConnect = vi.fn();
+const mockWallet = {
+  isInstalled: true,
+  isConnected: false,
+  publicKey: null,
+  network: null,
+  networkPassphrase: null,
+  isLoading: false,
+  error: null,
+  disconnect: vi.fn(),
+  signTransaction: vi.fn(),
+  signAuthEntry: vi.fn(),
+  signBlob: vi.fn(),
+};
+
 vi.mock("stellar-hooks", () => ({
-  useFreighter: vi.fn(() => ({
-    connect: vi.fn(async () => {}),
-    isConnected: false,
-    publicKey: null,
-    isLoading: false,
+  useFreighter: () => ({ connect: mockConnect, ...mockWallet }),
+}));
+
+vi.mock("@tanstack/react-query", () => ({
+  useMutation: vi.fn(({ mutationFn: _ }) => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    isSuccess: false,
     error: null,
   })),
 }));
 
 describe("useFreighterQuery", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  it("returns connect, mutation flags, and wallet state", () => {
+    const result = useFreighterQuery();
+
+    expect(typeof result.connect).toBe("function");
+    expect(result.isPending).toBe(false);
+    expect(result.isError).toBe(false);
+    expect(result.isSuccess).toBe(false);
+    expect(result.error).toBeNull();
+    expect(result.wallet).toMatchObject({
+      isInstalled: true,
+      isConnected: false,
+      publicKey: null,
+    });
   });
 
-  it("should wrap useFreighter connect in useMutation", () => {
-    const { result } = renderHook(() => useFreighterQuery());
+  it("exposes sign helpers on wallet", () => {
+    const result = useFreighterQuery();
 
-    expect(result.current).toHaveProperty("mutate");
-    expect(result.current).toHaveProperty("freighterState");
-  });
-
-  it("should have mutation methods", () => {
-    const { result } = renderHook(() => useFreighterQuery());
-
-    expect(result.current).toHaveProperty("isPending");
-    expect(result.current).toHaveProperty("isError");
-    expect(result.current).toHaveProperty("data");
+    expect(typeof result.wallet.signTransaction).toBe("function");
+    expect(typeof result.wallet.signAuthEntry).toBe("function");
+    expect(typeof result.wallet.signBlob).toBe("function");
+    expect(typeof result.wallet.disconnect).toBe("function");
   });
 });

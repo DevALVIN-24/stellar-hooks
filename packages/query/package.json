@@ -1,7 +1,7 @@
 {
   "name": "@stellar-hooks/query",
-  "version": "0.1.0",
-  "description": "React Query adapter for stellar-hooks — useFreighterQuery, useStellarAccountQuery, useStellarBalanceQuery",
+  "version": "0.2.0",
+  "description": "React Query adapter for stellar-hooks — useFreighterQuery, useStellarAccountQuery, useStellarBalanceQuery, useLedgerEntryQuery",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -14,13 +14,16 @@
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "docs:build": "typedoc",
+    "docs:clean": "rm -rf ../../docs/api/query"
   },
   "keywords": [
     "stellar",
     "soroban",
     "react",
     "react-query",
+    "tanstack-query",
     "hooks",
     "web3",
     "blockchain"
@@ -33,16 +36,16 @@
     "directory": "packages/query"
   },
   "peerDependencies": {
+    "@tanstack/react-query": ">=5.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
-    "react-query": ">=3.0.0",
     "stellar-hooks": ">=0.1.0"
   },
   "devDependencies": {
+    "@tanstack/react-query": "^5.0.0",
     "@types/react": "^18.3.0",
-    "@types/react-query": "^1.0.0",
     "react": "^18.3.0",
-    "react-query": "^3.39.0",
-    "stellar-hooks": "0.1.0"
+    "stellar-hooks": "0.1.0",
+    "vitest": "^1.6.0"
   }
 }

@@ -5,7 +5,8 @@
  * @license MIT
  */
 
-import type { Horizon, rpc } from "@stellar/stellar-sdk";
+import type { Horizon } from "@stellar/stellar-sdk";
+import type * as rpc from "@stellar/stellar-sdk/rpc";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,29 @@ export interface NetworkConfig {
   /** Network passphrase */
   networkPassphrase: string;
 }
+
+export {
+  // Branded types
+  type StellarPublicKey,
+  type StellarContractId,
+  type StellarXdrString,
+  type StellarTxHash,
+  type StellarAssetIssuer,
+  
+  // Factory functions
+  asPublicKey,
+  asContractId,
+  asXdrString,
+  asTxHash,
+  asAssetIssuer,
+  
+  // Unsafe casts
+  unsafeAsPublicKey,
+  unsafeAsContractId,
+  unsafeAsXdrString,
+  unsafeAsTxHash,
+  unsafeAsAssetIssuer,
+} from "./branded";
 
 /**
  * Endpoint configuration for a private or self-hosted Stellar network.
@@ -86,7 +110,7 @@ export const NETWORK_CONFIGS: Record<Exclude<StellarNetwork, "custom">, NetworkC
 // ─── Account ──────────────────────────────────────────────────────────────────
 
 export interface StellarAccountData {
-  accountId: string;
+  accountId: StellarPublicKey;
   balances: StellarBalance[];
   sequence: string;
   subentryCount: number;
@@ -109,7 +133,7 @@ export interface StellarAccountData {
 export interface StellarBalance {
   assetType: string;
   assetCode?: string;
-  assetIssuer?: string;
+  assetIssuer?: StellarAssetIssuer;
   balance: string;
   /** Parsed as a float for convenience */
   balanceFloat: number;
@@ -124,7 +148,7 @@ export interface StellarBalance {
 export interface FreighterState {
   isInstalled: boolean;
   isConnected: boolean;
-  publicKey: string | null;
+  publicKey: StellarPublicKey | null;
   network: string | null;
   networkPassphrase: string | null;
   isLoading: boolean;
@@ -134,8 +158,8 @@ export interface FreighterState {
 export interface UseFreighterReturn extends FreighterState {
   connect: () => Promise<void>;
   disconnect: () => void;
-  signTransaction: (xdr: string, opts?: SignTransactionOptions) => Promise<string>;
-  signAuthEntry: (entryPreimageXdr: string) => Promise<string>;
+  signTransaction: (xdr: StellarXdrString, opts?: SignTransactionOptions) => Promise<StellarXdrString>;
+  signAuthEntry: (entryPreimageXdr: StellarXdrString) => Promise<StellarXdrString>;
   signBlob: (blob: string, opts?: { accountToSign?: string }) => Promise<string>;
 }
 
@@ -159,7 +183,7 @@ export type TransactionStatus =
 
 export interface TransactionState<TResult = unknown> {
   status: TransactionStatus;
-  hash: string | null;
+  hash: StellarTxHash | null;
   result: TResult | null;
   error: Error | null;
   isLoading: boolean;
@@ -171,7 +195,7 @@ export interface TransactionState<TResult = unknown> {
 
 export interface ContractCallOptions<TResult = any> {
   /** Soroban contract address (C...) */
-  contractId: string;
+  contractId: StellarContractId;
   method: string;
   args?: unknown[];
   /** Fee in stroops. Defaults to 100 */
@@ -243,4 +267,52 @@ export interface StellarProviderProps {
 export interface StellarContextValue {
   config: NetworkConfig;
   network: StellarNetwork;
+}
+
+// ─── WalletConnect v2 ─────────────────────────────────────────────────────────
+
+/** Stellar CAIP-2 chain IDs for WalletConnect namespaces. */
+export type WalletConnectChain = "stellar:pubnet" | "stellar:testnet";
+
+/** Init options for useWalletConnect. projectId is required (Reown/WalletConnect dashboard). */
+export interface WalletConnectOptions {
+  /** WalletConnect / Reown project ID from https://cloud.reown.com */
+  projectId: string;
+  /** App metadata shown in the wallet during connection. */
+  metadata: {
+    name: string;
+    description: string;
+    url: string;
+    icons: string[];
+  };
+  /** Stellar chain to request. Defaults to "stellar:testnet". */
+  chain?: WalletConnectChain;
+  /** Relay URL. Defaults to wss://relay.walletconnect.com */
+  relayUrl?: string;
+}
+
+export interface WalletConnectState {
+  /** Connected Stellar public key, null when not connected. */
+  publicKey: string | null;
+  isConnected: boolean;
+  /** True while connect() is in-flight (awaiting wallet approval). */
+  isConnecting: boolean;
+  /** WalletConnect pairing URI — show as QR code or deep-link. */
+  uri: string | null;
+  error: Error | null;
+}
+
+export interface UseWalletConnectReturn extends WalletConnectState {
+  /**
+   * Initiate a WalletConnect session. Resolves once the wallet approves.
+   * Use the `uri` state to display the QR code/deep-link while awaiting approval.
+   */
+  connect: () => Promise<string | null>;
+  /** Disconnect and delete the active WalletConnect session. */
+  disconnect: () => Promise<void>;
+  /** Sign a Stellar transaction XDR via the connected wallet. */
+  signTransaction: (
+    xdr: string,
+    opts?: { networkPassphrase?: string }
+  ) => Promise<string>;
 }

@@ -16,7 +16,10 @@ import {
 import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
+import type { TransactionStatus, StellarPublicKey, StellarXdrString, StellarAssetIssuer } from "../types";
+import { unsafeAsXdrString } from "../types";
 import type { TransactionStatus } from "../types";
+import { validatePublicKey } from "../utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -27,11 +30,11 @@ import type { TransactionStatus } from "../types";
  */
 export type PaymentAsset =
   | { type: "native" }
-  | { type: "credit"; code: string; issuer: string };
+  | { type: "credit"; code: string; issuer: StellarAssetIssuer };
 
 export interface UsePaymentOptions {
   /** Recipient Stellar address (G...) */
-  destination: string;
+  destination: StellarPublicKey;
   /** Asset to send */
   asset: PaymentAsset;
   /** Amount as a string, e.g. "10.5" */
@@ -128,6 +131,11 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
       throw new Error("Freighter is not connected. Call connect() first.");
     }
 
+    validatePublicKey(destination, "destination");
+    if (asset.type === "credit") {
+      validatePublicKey(asset.issuer, "asset.issuer");
+    }
+
     // 1. Load the source account from Horizon to get the sequence number
     const server = new Horizon.Server(config.horizonUrl);
     const sourceAccount = await server.loadAccount(publicKey);
@@ -161,7 +169,7 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
     const builtXdr = builtTx.toXDR();
 
     // 5. Sign via Freighter
-    const signedXdr = await signTransaction(builtXdr, {
+    const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
       networkPassphrase: config.networkPassphrase,
     });
 

@@ -7,6 +7,14 @@
 import type { Horizon } from "@stellar/stellar-sdk";
 import type { StellarAccountData } from "../types";
 
+export {
+  validatePublicKey,
+  validateContractId,
+  validateOptionalPublicKey,
+  validateOptionalContractId,
+  ValidationError,
+} from "./validation";
+
 /**
  * Transforms a raw Horizon AccountResponse into the library's internal StellarAccountData format.
  */

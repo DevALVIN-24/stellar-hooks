@@ -15,6 +15,7 @@ import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
+import { validatePublicKey } from "../utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -133,6 +134,7 @@ export function useClaimableBalances(
     dispatch({ type: "LOADING" });
 
     try {
+      validatePublicKey(publicKey);
       const server = new Horizon.Server(config.horizonUrl);
       const response = await server
         .claimableBalances()

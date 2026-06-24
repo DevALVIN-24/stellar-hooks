@@ -64,6 +64,10 @@ export function App() {
 
 ## Hooks
 
+### `useNetwork()`
+
+Read the active network configuration and switch networks at runtime from anywhere inside `<StellarProvider>`.
+
 ### `useFreighter()`
 
 Connect to and interact with the [Freighter](https://freighter.app) browser extension wallet, including arbitrary data signing via `signBlob`.
@@ -97,6 +101,58 @@ const {
   signBlob,          // (blob: string, opts?) => Promise<string>
 } = useFreighter();
 ```
+
+---
+
+### `useNetwork()`
+
+Read the active network configuration and switch networks at runtime. All values reflect the currently active network — including any network switch made via `switchNetwork`.
+
+```ts
+const {
+  network,            // StellarNetwork — "testnet" | "mainnet" | "futurenet" | "custom"
+  networkPassphrase,  // string — e.g. "Test SDF Network ; September 2015"
+  horizonUrl,         // string — active Horizon REST API endpoint
+  sorobanRpcUrl,      // string — active Soroban RPC endpoint
+  config,             // NetworkConfig — full { network, horizonUrl, sorobanRpcUrl, networkPassphrase }
+  switchNetwork,      // (network: StellarNetwork, customConfig?: CustomNetworkConfig) => void
+} = useNetwork();
+```
+
+Switch networks at runtime (e.g. a settings UI):
+
+```tsx
+import { useNetwork } from "stellar-hooks";
+import type { StellarNetwork } from "stellar-hooks";
+
+function NetworkSwitcher() {
+  const { network, switchNetwork } = useNetwork();
+
+  return (
+    <select
+      value={network}
+      onChange={(e) => switchNetwork(e.target.value as StellarNetwork)}
+    >
+      <option value="testnet">Testnet</option>
+      <option value="mainnet">Mainnet</option>
+      <option value="futurenet">Futurenet</option>
+    </select>
+  );
+}
+```
+
+When switching to a custom network, pass the full `CustomNetworkConfig` as the second argument:
+
+```ts
+switchNetwork("custom", {
+  network: "custom",
+  horizonUrl: "https://my-horizon.example.com",
+  sorobanRpcUrl: "https://my-rpc.example.com",
+  networkPassphrase: "My Network ; 2024",
+});
+```
+
+The selected network is persisted to `localStorage` and survives page reloads.
 
 ---
 
@@ -247,16 +303,51 @@ return <button onClick={submit} disabled={isLoading}>Send XLM</button>;
 
 ## Provider
 
-Wrap your app with `<StellarProvider>` to configure the network.
+Wrap your app (or the portion that needs Stellar) with `<StellarProvider>` to configure the network. Every hook that reads blockchain data consumes endpoint configuration from this provider.
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `network` | `StellarNetwork` | `"testnet"` | The network to connect to. One of `"testnet"`, `"mainnet"`, `"futurenet"`, or `"custom"`. |
+| `customConfig` | `CustomNetworkConfig` | — | Required when `network` is `"custom"`. Supplies Horizon URL, Soroban RPC URL, and the network passphrase for your deployment. |
+| `children` | `React.ReactNode` | — | The component tree that will have access to Stellar context. |
+
+### Built-in network presets
+
+| Network | Horizon URL | Soroban RPC URL | Network Passphrase |
+|---------|-------------|-----------------|-------------------|
+| `testnet` | `https://horizon-testnet.stellar.org` | `https://soroban-testnet.stellar.org` | `Test SDF Network ; September 2015` |
+| `mainnet` | `https://horizon.stellar.org` | `https://mainnet.sorobanrpc.com` | `Public Global Stellar Network ; September 2015` |
+| `futurenet` | `https://horizon-futurenet.stellar.org` | `https://rpc-futurenet.stellar.org` | `Test SDF Future Network ; October 2022` |
+
+These presets are also exported as `NETWORK_CONFIGS` if you need them outside React:
+
+```ts
+import { NETWORK_CONFIGS } from "stellar-hooks";
+
+const { horizonUrl } = NETWORK_CONFIGS.mainnet;
+```
+
+### Usage examples
 
 ```tsx
 // Testnet (default)
-<StellarProvider network="testnet">...</StellarProvider>
+<StellarProvider network="testnet">
+  <App />
+</StellarProvider>
 
 // Mainnet
-<StellarProvider network="mainnet">...</StellarProvider>
+<StellarProvider network="mainnet">
+  <App />
+</StellarProvider>
 
-// Custom RPC
+// Futurenet
+<StellarProvider network="futurenet">
+  <App />
+</StellarProvider>
+
+// Custom / self-hosted network
 <StellarProvider
   network="custom"
   customConfig={{
@@ -266,9 +357,24 @@ Wrap your app with `<StellarProvider>` to configure the network.
     networkPassphrase: "My Network ; 2024",
   }}
 >
-  ...
+  <App />
 </StellarProvider>
 ```
+
+### `CustomNetworkConfig`
+
+Use this interface when connecting to a private or self-hosted Stellar network.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `network` | `"custom"` | Must be `"custom"`. |
+| `horizonUrl` | `string` | Horizon REST API base URL for this network. |
+| `sorobanRpcUrl` | `string` | Soroban RPC endpoint for contract simulation and submission. |
+| `networkPassphrase` | `string` | Network passphrase used when signing transactions. |
+
+### Network persistence
+
+`<StellarProvider>` automatically persists the active network in `localStorage` under the keys `stellar-hooks:network` and `stellar-hooks:custom-config`. On subsequent page loads the persisted choice is restored, overriding the `network` prop. To switch networks at runtime and persist the change, use [`useNetwork().switchNetwork`](#usenetwork).
 
 ---
 
