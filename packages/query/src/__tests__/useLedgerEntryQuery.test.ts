@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { useStellarAccountQuery } from "../hooks/useStellarAccountQuery";
+import { useLedgerEntryQuery } from "../hooks/useLedgerEntryQuery";
 
 const mockConfig = {
   horizonUrl: "https://horizon-testnet.stellar.org",
@@ -10,7 +10,6 @@ const mockConfig = {
 
 vi.mock("stellar-hooks", () => ({
   useStellarContext: () => ({ config: mockConfig }),
-  parseAccountResponse: vi.fn((raw) => raw),
 }));
 
 vi.mock("@tanstack/react-query", () => ({
@@ -25,11 +24,13 @@ vi.mock("@tanstack/react-query", () => ({
   })),
 }));
 
-const PUBLIC_KEY = "GBRPYHIL2CI3WHZDTOOQFC6EB4PSJ2BUMTOJ4ONKJMK646ARTICONX2";
+const mockLedgerKey = {
+  toXDR: () => "base64encodedkey==",
+} as any;
 
-describe("useStellarAccountQuery", () => {
+describe("useLedgerEntryQuery", () => {
   it("returns standard query fields", () => {
-    const result = useStellarAccountQuery(PUBLIC_KEY);
+    const result = useLedgerEntryQuery(mockLedgerKey);
 
     expect(result).toHaveProperty("data");
     expect(result).toHaveProperty("isLoading");
@@ -37,22 +38,31 @@ describe("useStellarAccountQuery", () => {
     expect(result).toHaveProperty("refetch");
   });
 
-  it("uses publicKey in query key", () => {
-    const result = useStellarAccountQuery(PUBLIC_KEY) as any;
+  it("uses ledgerEntry as query key prefix", () => {
+    const result = useLedgerEntryQuery(mockLedgerKey) as any;
 
-    expect(result._queryKey).toContain(PUBLIC_KEY);
-    expect(result._queryKey[0]).toBe("stellarAccount");
+    expect(result._queryKey[0]).toBe("ledgerEntry");
+    expect(result._queryKey[1]).toBe("base64encodedkey==");
   });
 
-  it("is disabled when publicKey is null", () => {
-    const result = useStellarAccountQuery(null) as any;
+  it("is disabled when ledgerKey is null", () => {
+    const result = useLedgerEntryQuery(null) as any;
 
     expect(result._enabled).toBe(false);
   });
 
   it("respects enabled:false option", () => {
-    const result = useStellarAccountQuery(PUBLIC_KEY, { enabled: false }) as any;
+    const result = useLedgerEntryQuery(mockLedgerKey, { enabled: false }) as any;
 
     expect(result._enabled).toBe(false);
+  });
+
+  it("uses custom sorobanRpcUrl in query key when provided", () => {
+    const customUrl = "https://my-custom-rpc.example.com";
+    const result = useLedgerEntryQuery(mockLedgerKey, {
+      sorobanRpcUrl: customUrl,
+    }) as any;
+
+    expect(result._queryKey).toContain(customUrl);
   });
 });
