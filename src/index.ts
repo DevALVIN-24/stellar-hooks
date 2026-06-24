@@ -140,3 +140,6 @@ export { NETWORK_CONFIGS } from "./types";
 
 // Utilities
 export { parseAccountResponse, getCache, setCache } from "./utils";
+
+export { useOfferBook } from "./hooks/useOfferBook";
+export type { UseOfferBookOptions } from "./hooks/useOfferBook";
