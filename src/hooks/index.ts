@@ -7,6 +7,9 @@ export type { UseStellarBalanceReturn } from "./useStellarBalance";
 export { useStellarOffers } from "./useStellarOffers";
 export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./useStellarOffers";
 
+export { useEffects } from "./useEffects";
+export type { UseEffectsOptions, UseEffectsReturn } from "./useEffects";
+
 export { useFreighter } from "./useFreighter";
 
 export { useTrades } from "./useTrades";
@@ -35,7 +38,21 @@ export type {
   UsePaymentOptions,
   UsePaymentReturn,
 } from "./usePayment";
+export { useBumpSequence } from "./useBumpSequence";
+export type {
+  UseBumpSequenceOptions,
+  UseBumpSequenceReturn,
+} from "./useBumpSequence";
 export { usePathPayment } from "./usePathPayment";
+export { useTrade } from "./useTrade";
+export type {
+  TradeAsset,
+  PlaceOfferParams,
+  ModifyOfferParams,
+  CancelOfferParams,
+  UseTradeOptions,
+  UseTradeReturn,
+} from "./useTrade";
 
 export { useSorobanTokenBalance } from "./useSorobanTokenBalance";
 export type {
@@ -45,3 +62,5 @@ export type {
 
 export { useManageData } from "./useManageData";
 export type { UseManageDataOptions, UseManageDataReturn } from "./useManageData";
+export { useOperations } from "./useOperations";
+export type { UseOperationsOptions, UseOperationsReturn } from "./useOperations";

@@ -19,7 +19,7 @@ import {
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
 import type { ContractCallOptions, UseContractCallReturn, TransactionStatus } from "../types";
-import { sleep, backoff } from "../utils";
+import { sleep, backoff, validateContractId } from "../utils";
 
 // ─── State ─────────────────────────────────────────────────────────────────────
 
@@ -134,6 +134,9 @@ export function useSorobanContract<TResult = unknown>(
       }
 
       try {
+        // ── 0. Validate inputs ───────────────────────────────────────────────
+        validateContractId(contractId);
+
         // ── 1. Build ──────────────────────────────────────────────────────────
         dispatch({ type: "BUILDING" });
 
@@ -256,6 +259,7 @@ export function useSorobanContract<TResult = unknown>(
       }
 
       try {
+        validateContractId(contractId);
         const server = sorobanRpcServer ?? new rpc.Server(config.sorobanRpcUrl);
         const contract = new Contract(contractId);
 

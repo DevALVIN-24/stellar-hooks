@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
-import { parseAccountResponse } from "../utils";
+import { parseAccountResponse, validatePublicKey } from "../utils";
 import type { StellarAccountData } from "../types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -96,6 +96,7 @@ export function useStellarAccount(
     dispatch({ type: "FETCH_START" });
 
     try {
+      validatePublicKey(publicKey);
       const server = new Horizon.Server(config.horizonUrl);
       const rawAccount = await server.loadAccount(publicKey);
       const parsed = parseAccountResponse(rawAccount);

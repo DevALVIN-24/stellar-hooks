@@ -17,6 +17,7 @@ import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
+import { validatePublicKey } from "../utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -126,6 +127,11 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
   const submit = useCallback(async () => {
     if (!publicKey) {
       throw new Error("Freighter is not connected. Call connect() first.");
+    }
+
+    validatePublicKey(destination, "destination");
+    if (asset.type === "credit") {
+      validatePublicKey(asset.issuer, "asset.issuer");
     }
 
     // 1. Load the source account from Horizon to get the sequence number

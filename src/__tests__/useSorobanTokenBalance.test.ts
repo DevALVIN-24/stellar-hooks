@@ -20,6 +20,10 @@ vi.mock("@stellar/stellar-sdk", () => {
   const build = vi.fn().mockReturnValue({});
 
   return {
+    StrKey: {
+      isValidEd25519PublicKey: vi.fn().mockReturnValue(true),
+      isValidContract: vi.fn().mockReturnValue(true),
+    },
     rpc: {
       Server: vi.fn().mockImplementation(() => ({
         simulateTransaction: mockSimulateTransaction,
@@ -58,6 +62,8 @@ vi.mock("../context", () => ({
 vi.mock("../utils", () => ({
   getCache: vi.fn().mockReturnValue(null),
   setCache: vi.fn(),
+  validateContractId: vi.fn(),
+  validatePublicKey: vi.fn(),
 }));
 
 const CONTRACT_ID = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";

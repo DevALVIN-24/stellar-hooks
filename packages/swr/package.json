@@ -14,7 +14,9 @@
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "docs:build": "typedoc",
+    "docs:clean": "rm -rf ../../docs/api/swr"
   },
   "keywords": [
     "stellar",

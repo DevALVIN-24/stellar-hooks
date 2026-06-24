@@ -244,3 +244,51 @@ export interface StellarContextValue {
   config: NetworkConfig;
   network: StellarNetwork;
 }
+
+// ─── WalletConnect v2 ─────────────────────────────────────────────────────────
+
+/** Stellar CAIP-2 chain IDs for WalletConnect namespaces. */
+export type WalletConnectChain = "stellar:pubnet" | "stellar:testnet";
+
+/** Init options for useWalletConnect. projectId is required (Reown/WalletConnect dashboard). */
+export interface WalletConnectOptions {
+  /** WalletConnect / Reown project ID from https://cloud.reown.com */
+  projectId: string;
+  /** App metadata shown in the wallet during connection. */
+  metadata: {
+    name: string;
+    description: string;
+    url: string;
+    icons: string[];
+  };
+  /** Stellar chain to request. Defaults to "stellar:testnet". */
+  chain?: WalletConnectChain;
+  /** Relay URL. Defaults to wss://relay.walletconnect.com */
+  relayUrl?: string;
+}
+
+export interface WalletConnectState {
+  /** Connected Stellar public key, null when not connected. */
+  publicKey: string | null;
+  isConnected: boolean;
+  /** True while connect() is in-flight (awaiting wallet approval). */
+  isConnecting: boolean;
+  /** WalletConnect pairing URI — show as QR code or deep-link. */
+  uri: string | null;
+  error: Error | null;
+}
+
+export interface UseWalletConnectReturn extends WalletConnectState {
+  /**
+   * Initiate a WalletConnect session. Resolves once the wallet approves.
+   * Use the `uri` state to display the QR code/deep-link while awaiting approval.
+   */
+  connect: () => Promise<string | null>;
+  /** Disconnect and delete the active WalletConnect session. */
+  disconnect: () => Promise<void>;
+  /** Sign a Stellar transaction XDR via the connected wallet. */
+  signTransaction: (
+    xdr: string,
+    opts?: { networkPassphrase?: string }
+  ) => Promise<string>;
+}

@@ -1,45 +1,62 @@
 /**
  * @file useFreighterQuery.ts
- * @description React Query hook for Freighter wallet integration.
+ * @description React Query adapter for Freighter wallet — wraps connect in useMutation
+ * and surfaces the full wallet state alongside mutation state.
  * @package @stellar-hooks/query
  * @license MIT
  */
 
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useFreighter } from "stellar-hooks";
-import type { UseFreighterQueryOptions } from "../types";
+import type { UseFreighterQueryOptions, UseFreighterQueryReturn } from "../types";
 
 /**
- * React Query adapter for useFreighter — wraps the Freighter connect logic in useMutation.
+ * React Query adapter for `useFreighter`.
+ *
+ * Wraps the `connect` action in `useMutation` so callers get standard
+ * `isPending / isError / isSuccess` flags, and exposes the full wallet state
+ * (publicKey, network, sign helpers, …) via the `wallet` property.
  *
  * @example
  * ```tsx
- * const { mutate: connect, isPending, isError } = useFreighterQuery();
+ * const { connect, isPending, wallet } = useFreighterQuery();
  *
  * return (
- *   <>
- *     <button onClick={() => connect()} disabled={isPending}>
- *       {isPending ? "Connecting..." : "Connect Wallet"}
- *     </button>
- *     {isError && <p>Failed to connect</p>}
- *   </>
+ *   <button onClick={connect} disabled={isPending || wallet.isConnected}>
+ *     {wallet.isConnected ? wallet.publicKey : "Connect Wallet"}
+ *   </button>
  * );
  * ```
  */
-export function useFreighterQuery(options?: UseFreighterQueryOptions) {
-  const { connect, ...freighterState } = useFreighter();
+export function useFreighterQuery(
+  options?: UseFreighterQueryOptions
+): UseFreighterQueryReturn {
+  const {
+    connect: freighterConnect,
+    disconnect,
+    signTransaction,
+    signAuthEntry,
+    signBlob,
+    ...walletState
+  } = useFreighter();
 
-  const mutation = useMutation(
-    {
-      mutationFn: async () => {
-        await connect();
-      },
-      ...options,
-    }
-  );
+  const { mutate, isPending, isError, isSuccess, error } = useMutation<void, Error, void>({
+    mutationFn: () => freighterConnect(),
+    ...options,
+  });
 
   return {
-    ...mutation,
-    freighterState,
+    connect: () => mutate(),
+    isPending,
+    isError,
+    isSuccess,
+    error,
+    wallet: {
+      ...walletState,
+      disconnect,
+      signTransaction: signTransaction as UseFreighterQueryReturn["wallet"]["signTransaction"],
+      signAuthEntry,
+      signBlob: signBlob as UseFreighterQueryReturn["wallet"]["signBlob"],
+    },
   };
 }
