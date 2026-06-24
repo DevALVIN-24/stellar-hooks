@@ -25,6 +25,9 @@ vi.mock("react", async () => {
 const mockGetEvents = vi.fn();
 
 vi.mock("@stellar/stellar-sdk", () => ({
+  StrKey: {
+    isValidContract: vi.fn().mockReturnValue(true),
+  },
   rpc: {
     Server: vi.fn().mockImplementation(() => ({
       getEvents: mockGetEvents,

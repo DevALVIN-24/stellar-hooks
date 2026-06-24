@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { rpc } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { validateContractId } from "../utils";
 
 export interface UseContractEventsOptions {
   /** Soroban contract address (C...) */
@@ -61,6 +62,7 @@ export function useContractEvents(options: UseContractEventsOptions) {
 
   const fetchEvents = useCallback(async () => {
     try {
+      validateContractId(options.contractId);
       dispatch({ type: "LOADING" });
       const server = new rpc.Server(config.sorobanRpcUrl);
       

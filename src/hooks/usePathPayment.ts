@@ -16,6 +16,7 @@ import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
+import { validatePublicKey } from "../utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -162,6 +163,14 @@ export function usePathPayment(
   const submit = useCallback(async () => {
     if (!publicKey) {
       throw new Error("Freighter is not connected. Call connect() first.");
+    }
+
+    validatePublicKey(destination, "destination");
+    if (sendAsset.type === "credit") {
+      validatePublicKey(sendAsset.issuer, "sendAsset.issuer");
+    }
+    if (destAsset.type === "credit") {
+      validatePublicKey(destAsset.issuer, "destAsset.issuer");
     }
 
     // 1. Load source account

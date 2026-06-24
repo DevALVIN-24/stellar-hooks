@@ -29,6 +29,10 @@ vi.mock("@stellar/stellar-sdk", async (importOriginal) => {
   const actual = await importOriginal() as any;
   return {
     ...actual,
+    StrKey: {
+      ...actual.StrKey,
+      isValidContract: vi.fn().mockReturnValue(true),
+    },
     rpc: {
       ...actual.rpc,
       Server: vi.fn().mockImplementation(() => ({

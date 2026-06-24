@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { validatePublicKey } from "../utils";
 
 export interface UseStellarOffersOptions {
   enabled?: boolean;
@@ -60,6 +61,7 @@ export function useStellarOffers(
     setError(null);
 
     try {
+      validatePublicKey(publicKey);
       const server = new Horizon.Server(config.horizonUrl);
       const response = await server.offers().forAccount(publicKey).call();
       setOffers(response.records);
