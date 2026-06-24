@@ -33,7 +33,10 @@
     "changeset": "changeset",
     "changeset:version": "changeset version",
     "changeset:publish": "changeset publish",
-    "size": "npm run build && size-limit"
+    "size": "npm run build && size-limit",
+    "docs:build": "typedoc",
+    "docs:build:all": "npm run docs:build && cd packages/query && npm run docs:build && cd ../swr && npm run docs:build && cd ../..",
+    "docs:clean": "rm -rf docs/api"
   },
   "size-limit": [
     {
@@ -95,6 +98,8 @@
     "semantic-release": "25.0.3",
     "size-limit": "^12.1.0",
     "tsup": "^8.0.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.12.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
   }

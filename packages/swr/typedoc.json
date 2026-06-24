@@ -1,0 +1,27 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "out": "../../docs/api/swr",
+  "plugin": ["typedoc-plugin-markdown"],
+  "theme": "markdown",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "excludeInternal": true,
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__mocks__/**",
+    "**/__tests__/**",
+    "**/node_modules/**",
+    "**/dist/**"
+  ],
+  "categorizeByGroup": true,
+  "readme": "none",
+  "tsconfig": "tsconfig.json",
+  "skipErrorChecking": true,
+  "treatWarningsAsErrors": false,
+  "disableSources": true,
+  "hideGenerator": true
+}
