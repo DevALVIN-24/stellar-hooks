@@ -338,6 +338,9 @@ export interface UseWalletsKitReturn extends WalletsKitState {
   signMessage: (
     message: string,
     opts?: { networkPassphrase?: string; address?: string }
+  ) => Promise<string>;
+}
+
 // ─── WalletConnect v2 ─────────────────────────────────────────────────────────
 
 /** Stellar CAIP-2 chain IDs for WalletConnect namespaces. */

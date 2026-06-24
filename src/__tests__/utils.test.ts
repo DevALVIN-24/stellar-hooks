@@ -125,3 +125,135 @@ describe("parseAccountResponse", () => {
     expect(sorted[0]?.assetCode).toBe("USDC");
   });
 });
+
+// ─── Additional parseAccountResponse: native XLM extraction ─────────────────
+
+describe("parseAccountResponse — native XLM extraction", () => {
+  it("filters out liquidity pool shares", () => {
+    const raw = {
+      ...mockRaw,
+      balances: [
+        { asset_type: "native", balance: "100.0000000", buying_liabilities: "0", selling_liabilities: "0" },
+        { asset_type: "liquidity_pool_shares", balance: "50.0000000" },
+      ],
+    } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances).toHaveLength(1);
+    expect(result.balances[0].assetType).toBe("native");
+  });
+
+  it("marks isNative on native balance", () => {
+    const raw = {
+      ...mockRaw,
+      balances: [
+        { asset_type: "native", balance: "100.0000000", buying_liabilities: "0", selling_liabilities: "0" },
+      ],
+    } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances[0].isNative).toBe(true);
+  });
+
+  it("sets isNative false for credit_alphanum4", () => {
+    const raw = {
+      ...mockRaw,
+      balances: [
+        {
+          asset_type: "credit_alphanum4",
+          asset_code: "USDC",
+          asset_issuer: "GISSUER",
+          balance: "50.0000000",
+          buying_liabilities: "0",
+          selling_liabilities: "0",
+          limit: "1000",
+        },
+      ],
+    } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances[0].isNative).toBe(false);
+  });
+
+  it("parses credit_alphanum12 assets correctly", () => {
+    const raw = {
+      ...mockRaw,
+      balances: [
+        {
+          asset_type: "credit_alphanum12",
+          asset_code: "LONGBRIDGE",
+          asset_issuer: "GABC",
+          balance: "200.0000000",
+          buying_liabilities: "0",
+          selling_liabilities: "0",
+          limit: "5000",
+        },
+      ],
+    } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances[0].assetCode).toBe("LONGBRIDGE");
+    expect(result.balances[0].isNative).toBe(false);
+  });
+
+  it("parses native balance buying/selling liabilities", () => {
+    const raw = {
+      ...mockRaw,
+      balances: [
+        {
+          asset_type: "native",
+          balance: "100.0000000",
+          buying_liabilities: "10.0000000",
+          selling_liabilities: "5.0000000",
+        },
+      ],
+    } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances[0].buyingLiabilities).toBe("10.0000000");
+    expect(result.balances[0].sellingLiabilities).toBe("5.0000000");
+  });
+
+  it("handles empty balances array", () => {
+    const raw = { ...mockRaw, balances: [] } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances).toEqual([]);
+  });
+
+  it("defaults num_sponsored and num_sponsoring to 0 when missing", () => {
+    const rawWithoutSponsored = { ...mockRaw } as Record<string, unknown>;
+    delete rawWithoutSponsored.num_sponsored;
+    delete rawWithoutSponsored.num_sponsoring;
+    const result = parseAccountResponse(rawWithoutSponsored as unknown as Horizon.AccountResponse);
+
+    expect(result.numSponsored).toBe(0);
+    expect(result.numSponsoring).toBe(0);
+  });
+
+  it("parses balanceFloat correctly for zero balance", () => {
+    const raw = {
+      ...mockRaw,
+      balances: [
+        { asset_type: "native", balance: "0.0000000", buying_liabilities: "0", selling_liabilities: "0" },
+      ],
+    } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances[0].balanceFloat).toBe(0);
+    expect(result.balances[0].balance).toBe("0.0000000");
+  });
+
+  it("parses balanceFloat for large balances", () => {
+    const largeBalance = "99999999999.1234567";
+    const raw = {
+      ...mockRaw,
+      balances: [
+        { asset_type: "native", balance: largeBalance, buying_liabilities: "0", selling_liabilities: "0" },
+      ],
+    } as unknown as Horizon.AccountResponse;
+
+    const result = parseAccountResponse(raw);
+    expect(result.balances[0].balanceFloat).toBe(parseFloat(largeBalance));
+  });
+});
