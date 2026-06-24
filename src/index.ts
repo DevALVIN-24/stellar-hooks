@@ -33,6 +33,7 @@ export type {
 } from "./hooks/usePathPayment";
 
 export { useSorobanTokenBalance } from "./hooks/useSorobanTokenBalance";
+export { useWalletConnect } from "./hooks/useWalletConnect";
 export type {
   SorobanTokenBalanceState,
   UseSorobanTokenBalanceOptions,
@@ -62,6 +63,11 @@ export type {
   // Provider
   StellarProviderProps,
   StellarContextValue,
+  // WalletConnect
+  WalletConnectChain,
+  WalletConnectOptions,
+  WalletConnectState,
+  UseWalletConnectReturn,
 } from "./types";
 
 // Hook-specific Types
